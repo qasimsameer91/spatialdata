@@ -1,0 +1,18 @@
+{
+  "bbox": [-0.51, 51.28, 0.33, 51.69],
+  "place_name": "London",
+  "title": "London",
+  "basemap": "vector",
+  "vector_style": "fiord",
+  "label_density": "balanced",
+  "terrain": true,
+  "overlays": ["population", "borders"],
+  "narration": "London spreads along the Thames. Nearly nine million people live inside the city, one of the densest settlements in Europe.",
+  "tts_provider": "kokoro",
+  "tts_voice": "bf_emma",
+  "music": "deep_haze.mp3",
+  "duration_s": 12,
+  "width": 1920,
+  "height": 1080,
+  "fps": 30
+}

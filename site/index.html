@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>spatialdata — turn maps into documentaries</title>
+<meta name="description" content="Render cinematic documentary video from geographic data. 3D terrain flyovers, satellite imagery, population and border overlays, AI narration — on your own machine, with no paid map APIs.">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="spatialdata — turn maps into documentaries">
+<meta property="og:description" content="Render cinematic documentary video from geographic data. 3D terrain, satellite imagery, population and borders, AI narration — no paid map APIs.">
+<meta property="og:image" content="assets/img/hero-poster.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="spatialdata — turn maps into documentaries">
+<meta name="twitter:description" content="Render cinematic documentary video from geographic data. 3D terrain, satellite imagery, population and borders, AI narration — no paid map APIs.">
+<meta name="twitter:image" content="assets/img/hero-poster.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="index.html"><span class="brand-mark"></span> spatialdata</a>
+  <button class="nav-burger" aria-label="Menu" aria-expanded="false">≡</button>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="features.html">Features</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="docs.html">Docs</a>
+  </nav>
+  <a class="btn btn-primary btn-sm nav-cta" href="pricing.html">Get a licence</a>
+</header>
+
+<!-- ============================================================== HERO -->
+<section class="hero">
+  <div class="hero-media">
+    <video src="assets/video/hero-karakoram.mp4" poster="assets/img/hero-poster.jpg"
+           muted loop playsinline autoplay preload="metadata" aria-hidden="true"></video>
+  </div>
+  <div class="wrap hero-inner">
+    <span class="eyebrow">Geographic data → finished film</span>
+    <h1 data-lines>Maps that<br><span class="grad-text">explain themselves.</span></h1>
+    <p class="lede">
+      Give it a place, a script and the data layers that matter. It returns a
+      narrated documentary — 3D terrain, satellite imagery, population and
+      borders, all timed to the words. Rendered on your own GPU.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-lg" href="pricing.html">Get a licence <span class="arr">→</span></a>
+      <a class="btn btn-ghost btn-lg" href="gallery.html">Watch the output</a>
+    </div>
+
+    <div class="hero-stats">
+      <div><div class="stat-n"><span data-count="0" data-suffix="">0</span></div>
+           <div class="stat-l">Map API cost, forever</div></div>
+      <div><div class="stat-n"><span data-count="66" data-suffix="s">0</span></div>
+           <div class="stat-l">Film from one JSON file</div></div>
+      <div><div class="stat-n"><span data-count="9" data-suffix=" fps">0</span></div>
+           <div class="stat-l">Render speed on a mid GPU</div></div>
+      <div><div class="stat-n"><span data-count="5" data-suffix="">0</span></div>
+           <div class="stat-l">Live data layers</div></div>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>Scroll</span><i></i></div>
+</section>
+
+<!-- =========================================================== MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-row">
+    <span>OpenStreetMap · Mapterhorn terrain · NASA GIBS · Kontur population · Natural Earth · MapLibre GL · Whisper alignment · h264 hardware encode ·</span>
+    <span>OpenStreetMap · Mapterhorn terrain · NASA GIBS · Kontur population · Natural Earth · MapLibre GL · Whisper alignment · h264 hardware encode ·</span>
+  </div>
+</div>
+
+<!-- ============================================================ PROBLEM -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-rise>The gap</span>
+      <h2 data-rise class="display">A map is data.<br>A documentary is <em>a story</em>.</h2>
+      <p class="lede" data-rise>
+        Getting from one to the other normally means a motion designer, a week
+        of After Effects, and a metered map subscription. Change one number and
+        you start again.
+      </p>
+    </div>
+
+    <div class="grid g3">
+      <article class="card" data-rise>
+        <div class="card-ico">✕</div>
+        <h3>The usual way</h3>
+        <p>Export stills. Rebuild the camera by hand. Re-time every overlay when
+           the script changes. Pay per map load.</p>
+      </article>
+      <article class="card" data-rise>
+        <div class="card-ico">⌁</div>
+        <h3>What changes</h3>
+        <p>The script drives the picture. Write “nine out of ten live along this
+           river” and the population layer arrives on that line.</p>
+      </article>
+      <article class="card" data-rise>
+        <div class="card-ico">∞</div>
+        <h3>Why it compounds</h3>
+        <p>The second film costs nothing. Change the bounding box and the script,
+           run it again, get a different documentary.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== SHOTS -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-rise>Real output</span>
+      <h2 data-rise>Every frame here came out of the renderer.</h2>
+      <p class="lede" data-rise>No mockups. These are stills from finished films — the
+        Karakoram, the Indus, and the 2022 floods in Sindh.</p>
+    </div>
+
+    <div class="grid g2">
+      <figure class="shot" data-scale>
+        <img src="assets/img/shot-terrain.jpg" alt="3D terrain flyover of the Karakoram" loading="lazy">
+        <figcaption><b>3D terrain</b> — real elevation, shaded relief, camera held steady over 4,000 m peaks</figcaption>
+      </figure>
+      <figure class="shot" data-scale>
+        <img src="assets/img/shot-population.jpg" alt="Population density overlay across Punjab" loading="lazy">
+        <figcaption><b>Population density</b> — Kontur H3 cells, scaled to the data, draped on terrain</figcaption>
+      </figure>
+      <figure class="shot" data-scale>
+        <img src="assets/img/shot-satellite.jpg" alt="Satellite imagery of flooded Sindh" loading="lazy">
+        <figcaption><b>Satellite imagery</b> — NASA GIBS, any date since 2000, before/after on cue</figcaption>
+      </figure>
+      <figure class="shot" data-scale>
+        <img src="assets/img/shot-borders.jpg" alt="International borders drawn over terrain" loading="lazy">
+        <figcaption><b>Borders</b> — international boundaries that fade in when the script names them</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================================== FLOW -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-rise>How a film gets made</span>
+      <h2 data-rise>Six stages, none of them yours.</h2>
+    </div>
+
+    <div class="steps">
+      <div class="step" data-rise><div><h3>Narration first</h3>
+        <p>The script is synthesised locally and force-aligned word by word, so the
+           film's length is set by the writing rather than a guess.</p></div></div>
+      <div class="step" data-rise><div><h3>Camera track</h3>
+        <p>Shots expand to one keyframe per frame — holds, fly-tos, orbits and
+           great-circle paths along a route.</p></div></div>
+      <div class="step" data-rise><div><h3>Exact prefetch</h3>
+        <p>The renderer's own camera model works out precisely which tiles each
+           frame needs and downloads them before a single frame is drawn.</p></div></div>
+      <div class="step" data-rise><div><h3>Deterministic capture</h3>
+        <p>Set camera, wait until the map is genuinely settled, screenshot. Two runs
+           of the same track produce the same pixels.</p></div></div>
+      <div class="step" data-rise><div><h3>Overlays on cue</h3>
+        <p>Layers cross-fade at the moment the narration reaches them, driven by a
+           beats file you can hand-edit.</p></div></div>
+      <div class="step" data-rise><div><h3>Mix and encode</h3>
+        <p>Music ducked under the voice, attribution burned in, encoded on your GPU.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ ZERO API -->
+<section>
+  <div class="wrap">
+    <div class="grid g2" style="gap:44px;align-items:center">
+      <div>
+        <span class="eyebrow" data-rise>The economics</span>
+        <h2 data-rise style="margin:16px 0 18px">No map bill.<br>Not now, not at scale.</h2>
+        <p class="lede" data-rise>
+          Every source is free and key-less: OpenStreetMap basemaps, Mapterhorn
+          terrain, NASA satellite imagery, Kontur population, Natural Earth
+          borders. Voice and alignment run on your machine.
+        </p>
+        <p class="small" data-rise style="margin-top:18px">
+          Render a hundred films a month and the marginal cost is electricity.
+        </p>
+      </div>
+      <div class="code" data-scale>
+<span class="c"># one file describes a film</span>
+{
+  <span class="k">"bbox"</span>: [<span class="n">67.4</span>, <span class="n">25.4</span>, <span class="n">70.1</span>, <span class="n">28.6</span>],
+  <span class="k">"overlays"</span>: [<span class="s">"satellite"</span>, <span class="s">"borders"</span>],
+  <span class="k">"date"</span>: <span class="s">"2022-07-15"</span>,
+  <span class="k">"date_end"</span>: <span class="s">"2022-08-30"</span>,
+  <span class="k">"narration"</span>: <span class="s">"In July the lower Indus</span>
+      <span class="s">looked like this. Six weeks later…"</span>
+}
+
+<span class="c">$ python -m worker render --job flood.json</span>
+<span class="c">  552 frames · 0 live requests · 18.4s film</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ CTA -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="cta-band center" data-scale>
+      <h2 class="display" style="position:relative">Point it at somewhere<br>that <em>matters to you</em>.</h2>
+      <p class="lede" style="margin:20px auto 30px;position:relative">
+        A licence is one payment. The renders are yours, unlimited, forever.
+      </p>
+      <div style="display:flex;gap:13px;justify-content:center;flex-wrap:wrap;position:relative">
+        <a class="btn btn-primary btn-lg" href="pricing.html">See pricing <span class="arr">→</span></a>
+        <a class="btn btn-ghost btn-lg" href="docs.html">Read the docs</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="index.html"><span class="brand-mark"></span> spatialdata</a>
+        <p class="small" style="margin-top:14px;max-width:34ch">
+          Geographic data into cinematic documentary video. Runs on your machine.
+        </p>
+      </div>
+      <div><h4>Product</h4><nav>
+        <a href="features.html">Features</a><a href="gallery.html">Gallery</a>
+        <a href="pricing.html">Pricing</a><a href="docs.html">Docs</a></nav></div>
+      <div><h4>Data</h4><nav>
+        <a href="https://openstreetmap.org" rel="noopener">OpenStreetMap</a>
+        <a href="https://openfreemap.org" rel="noopener">OpenFreeMap</a>
+        <a href="https://nasa.gov" rel="noopener">NASA GIBS</a>
+        <a href="https://data.humdata.org" rel="noopener">Kontur</a></nav></div>
+      <div><h4>Legal</h4><nav>
+        <a href="docs.html#licence">Licence</a><a href="docs.html#attribution">Attribution</a></nav></div>
+    </div>
+    <div class="foot-base">
+      <span class="tiny">© <span data-year>2026</span> spatialdata. All renders shown are real output.</span>
+      <span class="tiny">Map data © OpenStreetMap contributors · Imagery: NASA GIBS/EOSDIS · Population: Kontur (CC BY)</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/site.js"></script>
+</body>
+</html>

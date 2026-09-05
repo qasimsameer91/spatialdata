@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Features — spatialdata</title>
+<meta name="description" content="3D terrain, satellite imagery, population density, borders and weather — timed to your narration and rendered deterministically on your own GPU.">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Features — spatialdata">
+<meta property="og:description" content="Five free data layers on one timeline: terrain, satellite, population, borders and weather, cued by your script.">
+<meta property="og:image" content="assets/img/hero-poster.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Features — spatialdata">
+<meta name="twitter:description" content="Five free data layers on one timeline: terrain, satellite, population, borders and weather, cued by your script.">
+<meta name="twitter:image" content="assets/img/hero-poster.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="index.html"><span class="brand-mark"></span> spatialdata</a>
+  <button class="nav-burger" aria-label="Menu" aria-expanded="false">≡</button>
+  <nav class="nav-links">
+    <a href="index.html">Home</a><a href="features.html">Features</a>
+    <a href="gallery.html">Gallery</a><a href="pricing.html">Pricing</a><a href="docs.html">Docs</a>
+  </nav>
+  <a class="btn btn-primary btn-sm nav-cta" href="pricing.html">Get a licence</a>
+</header>
+
+<section style="padding-top:150px">
+  <div class="wrap">
+    <span class="eyebrow" data-rise>Features</span>
+    <h1 data-rise class="display" style="font-size:clamp(38px,6vw,66px);margin:18px 0 20px;max-width:20ch">
+      Five data layers, <em>one timeline</em>.
+    </h1>
+    <p class="lede" data-rise>
+      Each layer is real, current, and free to use. The script decides when each
+      one appears — you do not keyframe anything.
+    </p>
+  </div>
+</section>
+
+<section style="padding-top:20px">
+  <div class="wrap">
+    <div class="grid g2" style="gap:44px;align-items:center;margin-bottom:96px">
+      <figure class="shot" data-scale>
+        <img src="assets/img/shot-terrain.jpg" alt="3D terrain with shaded relief" loading="lazy"></figure>
+      <div>
+        <span class="eyebrow" data-rise>01 — Terrain</span>
+        <h2 data-rise style="font-size:clamp(26px,3.2vw,38px);margin:14px 0 14px">Real elevation, lit properly.</h2>
+        <p class="lede" data-rise style="font-size:17px">
+          Global terrain at up to 15 zoom levels, with shaded relief whose sun is
+          anchored to the map — so shadows stay put as the camera orbits instead of
+          swinging around with it.
+        </p>
+        <p class="small" data-rise style="margin-top:14px">
+          The camera height is smoothed against the terrain profile, so it rises over
+          a mountain range without lurching at every ridge.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid g2" style="gap:44px;align-items:center;margin-bottom:96px">
+      <div style="order:2">
+        <span class="eyebrow" data-rise>02 — Satellite</span>
+        <h2 data-rise style="font-size:clamp(26px,3.2vw,38px);margin:14px 0 14px">Any day since 2000.</h2>
+        <p class="lede" data-rise style="font-size:17px">
+          NASA GIBS true-colour imagery is time-enabled: name a date and you get that
+          day's pass. Name two and the film cross-fades between them — before and
+          after a flood, a fire, a season.
+        </p>
+        <p class="small" data-rise style="margin-top:14px">
+          Nine curated layers including night lights, cloud-top temperature, snow
+          cover, aerosols and active fire detections.
+        </p>
+      </div>
+      <figure class="shot" data-scale style="order:1">
+        <img src="assets/img/shot-satellite.jpg" alt="Satellite imagery of flooded Sindh" loading="lazy"></figure>
+    </div>
+
+    <div class="grid g2" style="gap:44px;align-items:center;margin-bottom:96px">
+      <figure class="shot" data-scale>
+        <img src="assets/img/shot-population.jpg" alt="Population density hexagons" loading="lazy"></figure>
+      <div>
+        <span class="eyebrow" data-rise>03 — Population</span>
+        <h2 data-rise style="font-size:clamp(26px,3.2vw,38px);margin:14px 0 14px">Where people actually are.</h2>
+        <p class="lede" data-rise style="font-size:17px">
+          Kontur's H3 hexagon grid, draped over the terrain and coloured by density.
+          The scale is derived from the cells in view, not a fixed constant, so a
+          country does not flatten into one colour.
+        </p>
+        <p class="small" data-rise style="margin-top:14px">
+          Resolution is matched to the shot automatically: 22 km cells for a
+          continent, 3 km for a country, 400 m for a city.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid g2" style="gap:44px;align-items:center">
+      <div style="order:2">
+        <span class="eyebrow" data-rise>04 — Borders &amp; weather</span>
+        <h2 data-rise style="font-size:clamp(26px,3.2vw,38px);margin:14px 0 14px">Lines that mean something.</h2>
+        <p class="lede" data-rise style="font-size:17px">
+          International boundaries drawn as a glowing line that arrives when the script
+          names them. Weather layers — storms, snow, smoke, fires — as a timed raster
+          over the same ground.
+        </p>
+      </div>
+      <figure class="shot" data-scale style="order:1">
+        <img src="assets/img/shot-borders.jpg" alt="Borders over terrain" loading="lazy"></figure>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-row">
+    <span>Deterministic capture · Exact tile prefetch · Word-level narration sync · Music ducking · Hardware encode · Attribution burned in ·</span>
+    <span>Deterministic capture · Exact tile prefetch · Word-level narration sync · Music ducking · Hardware encode · Attribution burned in ·</span>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-rise>Under the hood</span>
+      <h2 data-rise>Engineering you only notice when it is missing.</h2>
+    </div>
+    <div class="grid g3">
+      <article class="card" data-rise><div class="card-ico">◎</div><h3>Deterministic frames</h3>
+        <p>Not a screen recording. Each frame sets the camera, waits until the map is
+           genuinely settled, then captures. Two runs give identical pixels.</p></article>
+      <article class="card" data-rise><div class="card-ico">⇣</div><h3>Exact prefetch</h3>
+        <p>The camera model is verified against the browser's own projection, so the
+           engine knows precisely which tiles each frame needs and fetches them first.</p></article>
+      <article class="card" data-rise><div class="card-ico">⏱</div><h3>Word-level sync</h3>
+        <p>Narration is force-aligned word by word, so an overlay can land on a
+           specific phrase rather than a rough timestamp.</p></article>
+      <article class="card" data-rise><div class="card-ico">🎚</div><h3>Broadcast-shaped audio</h3>
+        <p>Music is loudness-normalised then ducked under the voice by sidechain
+           compression, so any track you drop in sits at the same level.</p></article>
+      <article class="card" data-rise><div class="card-ico">⚡</div><h3>GPU encode</h3>
+        <p>Frames go out through the hardware h264 encoder at constant quality, tagged
+           limited-range BT.709 so players do not shift the grade.</p></article>
+      <article class="card" data-rise><div class="card-ico">⛓</div><h3>Offline render loop</h3>
+        <p>Once tiles are cached the frame loop makes zero network requests — verifiable
+           with a strict mode that refuses to fetch mid-render.</p></article>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="cta-band center" data-scale>
+      <h2 class="display" style="position:relative">Ready to <em>point it somewhere</em>?</h2>
+      <div style="display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin-top:26px;position:relative">
+        <a class="btn btn-primary btn-lg" href="pricing.html">Get a licence <span class="arr">→</span></a>
+        <a class="btn btn-ghost btn-lg" href="docs.html">Read the docs</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><a class="brand" href="index.html"><span class="brand-mark"></span> spatialdata</a>
+        <p class="small" style="margin-top:14px;max-width:34ch">Geographic data into cinematic documentary video.</p></div>
+      <div><h4>Product</h4><nav><a href="features.html">Features</a><a href="gallery.html">Gallery</a>
+        <a href="pricing.html">Pricing</a><a href="docs.html">Docs</a></nav></div>
+      <div><h4>Data</h4><nav><a href="https://openstreetmap.org" rel="noopener">OpenStreetMap</a>
+        <a href="https://openfreemap.org" rel="noopener">OpenFreeMap</a>
+        <a href="https://nasa.gov" rel="noopener">NASA GIBS</a>
+        <a href="https://data.humdata.org" rel="noopener">Kontur</a></nav></div>
+      <div><h4>Legal</h4><nav><a href="docs.html#licence">Licence</a><a href="docs.html#attribution">Attribution</a></nav></div>
+    </div>
+    <div class="foot-base">
+      <span class="tiny">© <span data-year>2026</span> spatialdata.</span>
+      <span class="tiny">Map data © OpenStreetMap contributors · Imagery: NASA GIBS/EOSDIS · Population: Kontur (CC BY)</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/site.js"></script>
+</body>
+</html>

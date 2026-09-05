@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>spatialdata</title>
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="mark"></span>
+    <h1>spatialdata</h1>
+    <span class="tag">spatial data &rarr; cinematic documentary</span>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab is-active" data-view="new" role="tab">New job</button>
+    <button class="tab" data-view="queue" role="tab">Queue <span class="badge" id="queue-count">0</span></button>
+    <button class="tab" data-view="settings" role="tab">Settings</button>
+  </nav>
+  <div class="status" id="worker-status" title="worker state">
+    <span class="dot"></span><span class="label">connecting</span>
+  </div>
+</header>
+
+<main>
+
+<!-- ------------------------------------------------------------- NEW JOB -->
+<section class="view is-active" id="view-new">
+  <div class="grid">
+
+    <div class="col-map">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Region</h2>
+          <span class="hint" id="bbox-readout">drag the box, or search a place</span>
+        </div>
+        <div class="search-row">
+          <input type="search" id="place-search" placeholder="Search a place, e.g. Zermatt"
+                 autocomplete="off" spellcheck="false">
+          <button class="btn-ghost" id="search-btn">Search</button>
+        </div>
+        <ul class="search-results" id="search-results" hidden></ul>
+        <div id="picker-map" class="picker-map"></div>
+        <div class="bbox-fields">
+          <label>W <input type="number" step="0.0001" id="bb-w"></label>
+          <label>S <input type="number" step="0.0001" id="bb-s"></label>
+          <label>E <input type="number" step="0.0001" id="bb-e"></label>
+          <label>N <input type="number" step="0.0001" id="bb-n"></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-form">
+      <form id="job-form" autocomplete="off">
+
+        <div class="panel">
+          <div class="panel-head"><h2>Scene</h2></div>
+          <div class="field-row">
+            <label class="field">
+              <span>Title</span>
+              <input type="text" name="title" placeholder="The Alps">
+            </label>
+            <label class="field">
+              <span>Place name <em>(credits)</em></span>
+              <input type="text" name="place_name" placeholder="The Alps">
+            </label>
+          </div>
+          <div class="field-row">
+            <label class="field">
+              <span>Date <em>(satellite / weather)</em></span>
+              <input type="date" name="date">
+            </label>
+            <label class="field">
+              <span>End date <em>(optional range)</em></span>
+              <input type="date" name="date_end">
+            </label>
+          </div>
+          <div class="field-row">
+            <label class="field">
+              <span>Basemap</span>
+              <select name="basemap" id="basemap"></select>
+            </label>
+            <label class="field" id="style-field">
+              <span>Style</span>
+              <select name="vector_style" id="vector_style"></select>
+            </label>
+            <label class="field">
+              <span>Labels</span>
+              <select name="label_density" id="label_density"></select>
+            </label>
+          </div>
+          <div class="field-row">
+            <label class="check"><input type="checkbox" name="terrain" checked> 3D terrain</label>
+            <label class="check"><input type="checkbox" name="hillshade" checked> Hillshade</label>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Data overlays</h2>
+            <span class="hint">fade in automatically where the script mentions them</span>
+          </div>
+          <div class="overlay-grid" id="overlay-grid"></div>
+          <div class="field-row" id="layer-selects">
+            <label class="field">
+              <span>Satellite layer</span>
+              <select name="satellite_layer" id="satellite_layer"></select>
+            </label>
+            <label class="field">
+              <span>Weather layer</span>
+              <select name="weather_layer" id="weather_layer"></select>
+            </label>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Narration</h2>
+            <span class="hint" id="narration-hint">optional &mdash; sets the video length</span>
+          </div>
+          <textarea name="narration" id="narration" rows="5"
+            placeholder="The Alps rise along the border between Switzerland and Italy. Today, nearly fourteen million people live in their valleys."></textarea>
+          <div class="field-row">
+            <label class="field">
+              <span>Voice provider</span>
+              <select name="tts_provider" id="tts_provider"></select>
+            </label>
+            <label class="field">
+              <span>Voice</span>
+              <select name="tts_voice" id="tts_voice"></select>
+            </label>
+            <label class="field">
+              <span>Music</span>
+              <select name="music" id="music"></select>
+            </label>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h2>Output</h2></div>
+          <div class="field-row">
+            <label class="field">
+              <span>Resolution</span>
+              <select name="resolution" id="resolution">
+                <option value="1920x1080">1920 &times; 1080</option>
+                <option value="2560x1440">2560 &times; 1440</option>
+                <option value="1280x720">1280 &times; 720</option>
+                <option value="3840x2160">3840 &times; 2160 (4K)</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>FPS</span>
+              <select name="fps" id="fps">
+                <option>24</option><option selected>30</option><option>60</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Duration <em>(s)</em></span>
+              <input type="number" name="duration_s" value="12" min="1" max="900" step="1">
+            </label>
+          </div>
+          <p class="note" id="estimate">&nbsp;</p>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary" id="submit-btn">Render</button>
+          <span class="form-error" id="form-error"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- --------------------------------------------------------------- QUEUE -->
+<section class="view" id="view-queue">
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Jobs</h2>
+      <button class="btn-ghost" id="refresh-jobs">Refresh</button>
+    </div>
+    <div id="job-list" class="job-list"></div>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------------ SETTINGS -->
+<section class="view" id="view-settings">
+  <div class="panel narrow">
+    <div class="panel-head">
+      <h2>Defaults</h2>
+      <span class="hint">saved to config/local.json &mdash; restart the worker to apply</span>
+    </div>
+    <form id="settings-form">
+      <div class="field-row">
+        <label class="field"><span>Default FPS</span>
+          <input type="number" id="set-fps" min="1" max="120"></label>
+        <label class="field"><span>Width</span>
+          <input type="number" id="set-width" step="2"></label>
+        <label class="field"><span>Height</span>
+          <input type="number" id="set-height" step="2"></label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span>Terrain exaggeration</span>
+          <input type="number" id="set-terrain" step="0.1" min="0" max="5"></label>
+        <label class="field"><span>Cache miss policy</span>
+          <select id="set-miss">
+            <option value="warn">warn (fetch on miss)</option>
+            <option value="offline">offline (never fetch mid-render)</option>
+          </select></label>
+        <label class="field"><span>Default TTS provider</span>
+          <select id="set-tts"></select></label>
+      </div>
+      <div class="field-row">
+        <label class="field grow"><span>Population colour scale</span>
+          <div class="swatches" id="set-scale"></div></label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span>Music level (dB)</span>
+          <input type="number" id="set-music-db" step="1" min="-60" max="0"></label>
+        <label class="field"><span>Ducked level (dB)</span>
+          <input type="number" id="set-duck-db" step="1" min="-60" max="0"></label>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn-primary">Save settings</button>
+        <span class="form-error" id="settings-msg"></span>
+      </div>
+    </form>
+  </div>
+
+  <div class="panel narrow">
+    <div class="panel-head"><h2>Attribution</h2></div>
+    <p class="note" id="attribution-text"></p>
+    <p class="note dim">Burned into every render automatically: a corner credit on
+      every frame plus a full end card. Required by the data licences.</p>
+  </div>
+</section>
+
+</main>
+
+<!-- ---------------------------------------------------------- JOB DETAIL -->
+<div class="drawer" id="job-drawer" hidden>
+  <div class="drawer-panel">
+    <button class="drawer-close" id="drawer-close" aria-label="close">&times;</button>
+    <h2 id="drawer-title">Job</h2>
+    <div id="drawer-body"></div>
+  </div>
+</div>
+
+<script src="vendor/maplibre-gl.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

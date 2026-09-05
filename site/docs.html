@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docs — spatialdata</title>
+<meta name="description" content="Install, render your first film, and understand the job file, the beats timeline, licensing and attribution.">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Docs — spatialdata">
+<meta property="og:description" content="Install, render your first film, and understand the job file, beats timeline, licensing and attribution.">
+<meta property="og:image" content="assets/img/hero-poster.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Docs — spatialdata">
+<meta name="twitter:description" content="Install, render your first film, and understand the job file, beats timeline, licensing and attribution.">
+<meta name="twitter:image" content="assets/img/hero-poster.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+<style>
+  .doc-layout { display:grid; grid-template-columns:210px 1fr; gap:52px; align-items:start; }
+  @media (max-width:900px){ .doc-layout{ grid-template-columns:1fr; } .doc-side{ display:none; } }
+  .doc-side { position:sticky; top:92px; }
+  .doc-side h4 { font-size:11.5px; letter-spacing:.12em; text-transform:uppercase;
+                 color:var(--text-faint); margin-bottom:12px; }
+  .doc-side a { display:block; padding:6px 0; font-size:14px; color:var(--text-dim); transition:color .2s; }
+  .doc-side a:hover { color:var(--accent); }
+  .doc h2 { font-size:clamp(24px,3vw,32px); margin:0 0 16px; scroll-margin-top:96px; }
+  .doc h3 { margin:30px 0 10px; }
+  .doc p, .doc li { color:var(--text-dim); font-size:15.5px; }
+  .doc ul { margin:12px 0 12px 20px; display:grid; gap:8px; }
+  .doc section { padding:0 0 56px; }
+  .doc .code { margin:16px 0; }
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14.5px; }
+  th, td { text-align:left; padding:11px 12px; border-bottom:1px solid var(--line-soft); }
+  th { color:var(--text-faint); font-weight:600; font-size:12px; letter-spacing:.06em; text-transform:uppercase; }
+  td { color:var(--text-dim); }
+  td code { font-family:var(--mono); font-size:13px; color:var(--accent); }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="index.html"><span class="brand-mark"></span> spatialdata</a>
+  <button class="nav-burger" aria-label="Menu" aria-expanded="false">≡</button>
+  <nav class="nav-links">
+    <a href="index.html">Home</a><a href="features.html">Features</a>
+    <a href="gallery.html">Gallery</a><a href="pricing.html">Pricing</a><a href="docs.html">Docs</a>
+  </nav>
+  <a class="btn btn-primary btn-sm nav-cta" href="pricing.html">Get a licence</a>
+</header>
+
+<section style="padding-top:140px;padding-bottom:34px">
+  <div class="wrap">
+    <span class="eyebrow" data-rise>Documentation</span>
+    <h1 data-rise class="display" style="font-size:clamp(36px,5.4vw,58px);margin:16px 0 0">
+      From install to <em>first film</em>.
+    </h1>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap doc-layout">
+    <aside class="doc-side">
+      <h4>Contents</h4>
+      <a href="#install">Install</a>
+      <a href="#first">Your first film</a>
+      <a href="#job">The job file</a>
+      <a href="#beats">The beats timeline</a>
+      <a href="#hosted">Hosted queue</a>
+      <a href="#licence">Licence</a>
+      <a href="#attribution">Attribution</a>
+    </aside>
+
+    <div class="doc">
+      <section id="install" data-rise>
+        <h2>Install</h2>
+        <p>Python 3.10 or newer, plus <span class="mono">ffmpeg</span> on your PATH.</p>
+        <div class="code">
+<span class="c"># dependencies and the headless browser</span>
+pip install -r requirements.txt
+python -m playwright install chromium
+
+<span class="c"># one-time data download (free, ~700 MB with 3km population)</span>
+python data/download_data.py --natural-earth --music --kontur 3km
+
+<span class="c"># confirm the machine is ready — GPU, encoder, data, upstreams</span>
+python -m worker doctor
+        </div>
+        <p>On Windows, ffmpeg comes from <span class="mono">winget install Gyan.FFmpeg</span>.
+           <span class="mono">doctor</span> prints the WebGL renderer — if it says SwiftShader
+           you are on software rendering and frames will be several times slower.</p>
+      </section>
+
+      <section id="first" data-rise>
+        <h2>Your first film</h2>
+        <p>Two ways in. The dashboard is the quicker one:</p>
+        <div class="code">python -m worker serve      <span class="c"># http://127.0.0.1:8000</span></div>
+        <p>Search a place or shift-drag a box on the map, tick the overlays you want,
+           paste a script, press Render. Progress, preview frames and the finished
+           video all appear in the Queue tab.</p>
+        <p>Or drive it from a file, which is what you want once you are making these
+           repeatedly:</p>
+        <div class="code">python -m worker render --job examples/indus.json</div>
+        <p><b>Tick at least one overlay or write a script.</b> With neither, you get a
+           moving map and nothing else — the layers and the narration are what make it
+           a documentary.</p>
+      </section>
+
+      <section id="job" data-rise>
+        <h2>The job file</h2>
+        <p>One JSON document describes a film.</p>
+        <table>
+          <tr><th>Key</th><th>What it does</th></tr>
+          <tr><td><code>bbox</code></td><td>Region as [west, south, east, north] in EPSG:4326</td></tr>
+          <tr><td><code>overlays</code></td><td>Any of satellite, satellite_after, weather, population, borders</td></tr>
+          <tr><td><code>date</code> / <code>date_end</code></td><td>Imagery date; both set gives a before/after cross-fade</td></tr>
+          <tr><td><code>narration</code></td><td>The script. This sets the film's length</td></tr>
+          <tr><td><code>shots</code></td><td>Optional camera moves: hold, flyto, orbit, path</td></tr>
+          <tr><td><code>beats</code></td><td>Optional explicit overlay timeline</td></tr>
+          <tr><td><code>vector_style</code></td><td>fiord (default), dark, positron, liberty, bright</td></tr>
+          <tr><td><code>label_density</code></td><td>full, balanced, minimal, none</td></tr>
+        </table>
+        <p>Leave <code>shots</code> out and a sensible flyover is generated for the region.
+           Leave <code>beats</code> out and overlays are cued from the words in your script.</p>
+      </section>
+
+      <section id="beats" data-rise>
+        <h2>The beats timeline</h2>
+        <p>Every render writes <span class="mono">output/&lt;job&gt;/beats.json</span> —
+           the mapping from time to camera to visible overlays. It is generated from the
+           script, and you can edit it and feed it back.</p>
+        <div class="code">
+{
+  <span class="k">"fps"</span>: <span class="n">30</span>, <span class="k">"frames"</span>: <span class="n">1980</span>,
+  <span class="k">"beats"</span>: [
+    { <span class="k">"t"</span>: <span class="n">0.0</span>, <span class="k">"duration"</span>: <span class="n">4.53</span>,
+      <span class="k">"overlays"</span>: { <span class="k">"borders"</span>: <span class="n">1.0</span> },
+      <span class="k">"text"</span>: <span class="s">"Pakistan is a country built around a single river."</span> },
+    { <span class="k">"t"</span>: <span class="n">35.05</span>, <span class="k">"duration"</span>: <span class="n">5.25</span>,
+      <span class="k">"overlays"</span>: { <span class="k">"population"</span>: <span class="n">1.0</span> },
+      <span class="k">"text"</span>: <span class="s">"Nine out of ten Pakistanis live within reach of this water."</span> }
+  ]
+}
+        </div>
+        <p>Once introduced, a layer stays on at lower opacity rather than snapping off —
+           a layer that flashes on and vanishes reads as a fault, not an edit.</p>
+      </section>
+
+      <section id="hosted" data-rise>
+        <h2>Hosted queue <span class="tiny" style="color:var(--accent)">Studio and above</span></h2>
+        <p>The system splits in two. A small dashboard runs on a cheap host and holds
+           the job queue; your own machine polls it, renders locally, and uploads the
+           finished file.</p>
+        <div class="code">
+<span class="c"># on the host — UI and queue only, no rendering</span>
+python -m worker serve --no-worker --host 0.0.0.0
+
+<span class="c"># on your machine — claims jobs and renders them</span>
+python -m worker poll --url https://your-app.example.com --token SECRET
+        </div>
+        <p>The hosted side installs three packages and never renders anything, which is
+           what keeps it inside a free tier. Set <span class="mono">SPATIALDATA_TOKEN</span>
+           on both ends to require a shared secret.</p>
+      </section>
+
+      <section id="licence" data-rise>
+        <h2>Licence</h2>
+        <p>A licence covers the software on the machine count for your tier. The films
+           you render are yours, including commercially, with no revenue share and no
+           per-render fee.</p>
+        <ul>
+          <li>Solo — one person, one machine</li>
+          <li>Studio — up to five render machines, hosted queue included</li>
+          <li>Broadcast — unlimited machines, custom layers, source access</li>
+        </ul>
+        <p>Fourteen day refund. Render something first.</p>
+      </section>
+
+      <section id="attribution" data-rise>
+        <h2>Attribution</h2>
+        <p>The data sources are free but not unconditional — most require credit. The
+           renderer handles that for you: a compact credit is burned into the corner of
+           every frame automatically, naming only the sources that render actually used.</p>
+        <p>Two things stay your responsibility:</p>
+        <ul>
+          <li>If you use the bundled music, keep the composer credit in your description
+              — the tracks are CC BY.</li>
+          <li>If you redistribute the underlying data rather than a video of it, the
+              source licences (ODbL, CC BY) apply to that distribution.</li>
+        </ul>
+        <p class="small" style="margin-top:16px">
+          Map data © OpenStreetMap contributors, OpenFreeMap. Terrain © Mapterhorn.
+          Imagery: NASA GIBS/EOSDIS. Population: Kontur Population (CC BY).
+          Boundaries: Natural Earth. Rendered with MapLibre GL JS.
+        </p>
+      </section>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="cta-band center" data-scale>
+      <h2 class="display" style="position:relative">Read enough? <em>Start rendering.</em></h2>
+      <div style="display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin-top:26px;position:relative">
+        <a class="btn btn-primary btn-lg" href="pricing.html">Get a licence <span class="arr">→</span></a>
+        <a class="btn btn-ghost btn-lg" href="gallery.html">See the output</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><a class="brand" href="index.html"><span class="brand-mark"></span> spatialdata</a>
+        <p class="small" style="margin-top:14px;max-width:34ch">Geographic data into cinematic documentary video.</p></div>
+      <div><h4>Product</h4><nav><a href="features.html">Features</a><a href="gallery.html">Gallery</a>
+        <a href="pricing.html">Pricing</a><a href="docs.html">Docs</a></nav></div>
+      <div><h4>Data</h4><nav><a href="https://openstreetmap.org" rel="noopener">OpenStreetMap</a>
+        <a href="https://openfreemap.org" rel="noopener">OpenFreeMap</a>
+        <a href="https://nasa.gov" rel="noopener">NASA GIBS</a>
+        <a href="https://data.humdata.org" rel="noopener">Kontur</a></nav></div>
+      <div><h4>Legal</h4><nav><a href="docs.html#licence">Licence</a><a href="docs.html#attribution">Attribution</a></nav></div>
+    </div>
+    <div class="foot-base">
+      <span class="tiny">© <span data-year>2026</span> spatialdata.</span>
+      <span class="tiny">Map data © OpenStreetMap contributors · Imagery: NASA GIBS/EOSDIS · Population: Kontur (CC BY)</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/site.js"></script>
+</body>
+</html>

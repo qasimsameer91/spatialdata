@@ -1,0 +1,109 @@
+{
+  "_comment": "Shot durations are cut to the narration, which Kokoro renders at 64.0s. Each shot below lines up with the sentence quoted in its _line field.",
+
+  "bbox": [66.5, 23.5, 77.5, 36.6],
+  "place_name": "The Indus",
+  "title": "The Indus",
+  "basemap": "vector",
+  "vector_style": "fiord",
+  "label_density": "minimal",
+  "terrain": true,
+  "hillshade": true,
+  "overlays": ["borders", "population"],
+
+  "shots": [
+    {
+      "_line": "0.00-4.53  Pakistan is a country built around a single river.",
+      "type": "hold",
+      "camera": {"lng": 70.60, "lat": 29.80, "zoom": 4.9, "bearing": 8, "pitch": 40},
+      "duration": 4.8
+    },
+    {
+      "_line": "4.81-12.96  The Indus begins in the glaciers of the Karakoram...",
+      "type": "flyto",
+      "to": {"lng": 76.10, "lat": 35.50, "zoom": 8.0, "bearing": 212, "pitch": 66},
+      "duration": 8.4, "ease": "inout"
+    },
+    {
+      "_line": "13.24-21.71  From those peaks it falls nearly five thousand metres...",
+      "type": "path",
+      "route": [[76.10, 35.50], [75.60, 35.30], [74.63, 35.28], [73.60, 35.20]],
+      "zoom": 8.0, "zoom_to": 7.4, "pitch": 64, "pitch_to": 58,
+      "duration": 8.8, "bearing": "follow", "ease": "inout"
+    },
+    {
+      "_line": "21.99-25.64  Then the mountains end, and the land opens.",
+      "type": "flyto",
+      "to": {"lng": 72.70, "lat": 33.10, "zoom": 6.6, "bearing": 196, "pitch": 54},
+      "duration": 4.0, "ease": "inout"
+    },
+    {
+      "_line": "25.92-34.77  Across the plains of Punjab the river slows and spreads...",
+      "type": "path",
+      "route": [[72.70, 33.10], [71.90, 31.90], [71.20, 30.60]],
+      "zoom": 6.6, "zoom_to": 6.5, "pitch": 54,
+      "duration": 9.0, "bearing": "follow", "ease": "inout"
+    },
+    {
+      "_line": "35.05-45.96  Nine out of ten Pakistanis live... Two hundred million people",
+      "type": "path",
+      "route": [[71.20, 30.60], [70.20, 29.20], [69.30, 28.10], [68.85, 27.70]],
+      "zoom": 6.5, "zoom_to": 6.4, "pitch": 54, "pitch_to": 50,
+      "duration": 11.2, "bearing": "follow", "ease": "inout"
+    },
+    {
+      "_line": "46.24-50.26  Beyond the irrigated land, the country is desert.",
+      "type": "flyto",
+      "to": {"lng": 69.20, "lat": 27.20, "zoom": 5.5, "bearing": 190, "pitch": 46},
+      "duration": 4.3, "ease": "inout"
+    },
+    {
+      "_line": "50.54-58.92  The Indus reaches the sea through a delta that is shrinking...",
+      "type": "path",
+      "route": [[69.20, 27.20], [68.60, 26.00], [68.20, 24.90], [67.70, 24.30]],
+      "zoom": 5.9, "zoom_to": 7.0, "pitch": 50, "pitch_to": 58,
+      "duration": 8.7, "bearing": "follow", "ease": "inout"
+    },
+    {
+      "_line": "59.20-64.03  One river. A quarter of a billion lives.",
+      "type": "orbit",
+      "center": [67.70, 24.30], "zoom": 7.0, "pitch": 58,
+      "bearing_from": 196, "degrees": 24,
+      "duration": 6.8, "ease": "smooth"
+    }
+  ],
+
+  "beats": [
+    {"t": 0.0,  "duration": 4.53, "overlays": {"borders": 1.0},
+     "text": "Pakistan is a country built around a single river."},
+    {"t": 4.81, "duration": 8.15, "overlays": {"borders": 0.7},
+     "text": "The Indus begins in the glaciers of the Karakoram."},
+    {"t": 13.24, "duration": 8.47, "overlays": {"borders": 0.55},
+     "text": "From those peaks it falls nearly five thousand metres."},
+    {"t": 21.99, "duration": 3.65, "overlays": {"borders": 0.55},
+     "text": "Then the mountains end, and the land opens."},
+    {"t": 25.92, "duration": 8.85, "overlays": {"borders": 0.7},
+     "text": "Across the plains of Punjab the river slows and spreads."},
+    {"t": 35.05, "duration": 5.25, "overlays": {"borders": 0.7, "population": 1.0},
+     "text": "Nine out of ten Pakistanis live within reach of this water."},
+    {"t": 40.58, "duration": 5.38, "overlays": {"borders": 0.7, "population": 1.0},
+     "text": "Two hundred million people, in a corridor a few hundred kilometres wide."},
+    {"t": 46.24, "duration": 4.02, "overlays": {"borders": 0.8, "population": 0.85},
+     "text": "Beyond the irrigated land, the country is desert."},
+    {"t": 50.54, "duration": 8.38, "overlays": {"borders": 0.7, "population": 0.7},
+     "text": "The Indus reaches the sea through a delta that is shrinking."},
+    {"t": 59.20, "duration": 6.80, "overlays": {"borders": 0.8, "population": 0.8},
+     "text": "One river. A quarter of a billion lives."}
+  ],
+
+  "narration": "Pakistan is a country built around a single river. The Indus begins in the glaciers of the Karakoram, where the highest mountains on Earth collect the snow of two winters. From those peaks it falls nearly five thousand metres, cutting through the ranges in gorges deep enough to swallow a city. Then the mountains end, and the land opens. Across the plains of Punjab the river slows and spreads, and for five thousand years people have farmed the silt it leaves behind. Nine out of ten Pakistanis live within reach of this water. Two hundred million people, in a corridor a few hundred kilometres wide. Beyond the irrigated land, the country is desert. The Indus reaches the sea through a delta that is shrinking, starved of the silt now held behind dams upstream. One river. A quarter of a billion lives.",
+
+  "tts_provider": "kokoro",
+  "tts_voice": "bm_george",
+  "music": "long_note_two.mp3",
+
+  "duration_s": 66,
+  "width": 1280,
+  "height": 720,
+  "fps": 30
+}

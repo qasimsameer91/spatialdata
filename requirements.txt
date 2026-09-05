@@ -1,0 +1,29 @@
+# Local render worker + dashboard.
+# Everything here is free and open source; no service in this project bills.
+
+# --- core pipeline -------------------------------------------------------
+aiohttp>=3.9            # polite async fetching of tiles / capabilities
+playwright>=1.40        # headless Chromium driving MapLibre GL JS
+numpy>=1.24
+Pillow>=10.0            # attribution strip + end credit card
+
+# --- dashboard -----------------------------------------------------------
+fastapi>=0.110
+uvicorn>=0.27
+
+# --- voiceover (optional but on by default) ------------------------------
+# Kokoro is the free local TTS. faster-whisper does forced alignment so
+# overlays can be synced to individual words.
+kokoro>=0.9 ; python_version >= "3.9"
+soundfile>=0.12
+faster-whisper>=1.0
+
+# --- optional second TTS provider ---------------------------------------
+# Only needed if you pick the "gcloud" provider in the dashboard.
+# google-cloud-texttospeech>=2.16
+
+# NOTE: ffmpeg and ffprobe must be on PATH (not pip-installable here).
+#   Windows: winget install Gyan.FFmpeg
+#   macOS:   brew install ffmpeg
+#   Linux:   apt install ffmpeg
+# After installing, fetch the browser once:  python -m playwright install chromium

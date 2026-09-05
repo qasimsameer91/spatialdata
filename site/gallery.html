@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gallery — spatialdata</title>
+<meta name="description" content="Films rendered by spatialdata: the Indus, the Karakoram, and the 2022 floods in Sindh. Real output, nothing mocked up.">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Gallery — spatialdata">
+<meta property="og:description" content="Films rendered by spatialdata: the Indus, the Karakoram, and the 2022 floods in Sindh. Real output.">
+<meta property="og:image" content="assets/img/hero-poster.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Gallery — spatialdata">
+<meta name="twitter:description" content="Films rendered by spatialdata: the Indus, the Karakoram, and the 2022 floods in Sindh. Real output.">
+<meta name="twitter:image" content="assets/img/hero-poster.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+<style>
+  .film { border:1px solid var(--line); border-radius:var(--r-lg); overflow:hidden;
+          background:var(--bg-panel); margin-bottom:26px; }
+  .film video { width:100%; aspect-ratio:16/9; background:#000; object-fit:cover; }
+  .film-meta { padding:22px 24px 24px; }
+  .film-meta h3 { margin-bottom:8px; }
+  .film-tags { display:flex; flex-wrap:wrap; gap:7px; margin-top:14px; }
+  .tag { font:500 11.5px/1 var(--sans); letter-spacing:.06em; text-transform:uppercase;
+         padding:6px 10px; border-radius:999px; border:1px solid var(--line);
+         color:var(--text-faint); }
+  .tag.hi { border-color:var(--accent-deep); color:var(--accent); }
+  .film-facts { display:flex; flex-wrap:wrap; gap:26px; margin-top:18px;
+                padding-top:16px; border-top:1px solid var(--line-soft); }
+  .fact b { display:block; font-size:19px; letter-spacing:-.02em; }
+  .fact span { font-size:12px; color:var(--text-faint); }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="index.html"><span class="brand-mark"></span> spatialdata</a>
+  <button class="nav-burger" aria-label="Menu" aria-expanded="false">≡</button>
+  <nav class="nav-links">
+    <a href="index.html">Home</a><a href="features.html">Features</a>
+    <a href="gallery.html">Gallery</a><a href="pricing.html">Pricing</a><a href="docs.html">Docs</a>
+  </nav>
+  <a class="btn btn-primary btn-sm nav-cta" href="pricing.html">Get a licence</a>
+</header>
+
+<section style="padding-top:150px;padding-bottom:40px">
+  <div class="wrap">
+    <span class="eyebrow" data-rise>Gallery</span>
+    <h1 data-rise class="display" style="font-size:clamp(38px,6vw,66px);margin:18px 0 20px;max-width:20ch">
+      Everything here is <em>real output</em>.
+    </h1>
+    <p class="lede" data-rise>
+      No mockups, no compositing afterwards. Each film below came out of the
+      renderer as a single MP4, from a JSON job file and a script.
+    </p>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+
+    <article class="film" data-scale>
+      <video src="assets/video/indus.mp4" poster="assets/img/poster-indus.jpg"
+             controls preload="none" playsinline></video>
+      <div class="film-meta">
+        <h3>The Indus</h3>
+        <p class="small">A river that decides where ninety percent of a country lives.
+          Nine camera moves, each cut to a specific sentence — the population layer
+          arrives on the line that mentions it.</p>
+        <div class="film-tags">
+          <span class="tag hi">Terrain</span><span class="tag hi">Population</span>
+          <span class="tag hi">Borders</span><span class="tag">Narration</span><span class="tag">Music</span>
+        </div>
+        <div class="film-facts">
+          <div class="fact"><b>66s</b><span>runtime</span></div>
+          <div class="fact"><b>1,980</b><span>frames</span></div>
+          <div class="fact"><b>141</b><span>words aligned</span></div>
+          <div class="fact"><b>4,315 → 146 m</b><span>camera descent</span></div>
+          <div class="fact"><b>0</b><span>live requests</span></div>
+        </div>
+      </div>
+    </article>
+
+    <div class="grid g2">
+      <article class="film" data-scale>
+        <video src="assets/video/flood.mp4" poster="assets/img/poster-flood.jpg"
+               controls preload="none" playsinline></video>
+        <div class="film-meta">
+          <h3>The Water Came</h3>
+          <p class="small">Sindh, before and after the 2022 monsoon. Two satellite
+            dates cross-faded on the narration cue.</p>
+          <div class="film-tags">
+            <span class="tag hi">Satellite</span><span class="tag hi">Before / after</span>
+            <span class="tag">Borders</span><span class="tag">Narration</span>
+          </div>
+          <div class="film-facts">
+            <div class="fact"><b>18.4s</b><span>runtime</span></div>
+            <div class="fact"><b>552</b><span>frames</span></div>
+            <div class="fact"><b>2</b><span>imagery dates</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="film" data-scale>
+        <video src="assets/video/karakoram.mp4" poster="assets/img/poster-karakoram.jpg"
+               controls preload="none" playsinline></video>
+        <div class="film-meta">
+          <h3>The Karakoram</h3>
+          <p class="small">Some of the steepest ground on earth, with the camera held
+            level at 2,965 m so it does not lurch over the ridges.</p>
+          <div class="film-tags">
+            <span class="tag hi">Terrain</span><span class="tag hi">Hillshade</span>
+            <span class="tag">Population</span><span class="tag">Borders</span>
+          </div>
+          <div class="film-facts">
+            <div class="fact"><b>21.6s</b><span>runtime</span></div>
+            <div class="fact"><b>528</b><span>frames</span></div>
+            <div class="fact"><b>0.0 m</b><span>camera bob / frame</span></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="sec-head" style="margin-top:84px">
+      <span class="eyebrow" data-rise>Stills</span>
+      <h2 data-rise>Frames, straight from the render.</h2>
+    </div>
+    <div class="grid g3">
+      <figure class="shot" data-scale><img src="assets/img/shot-terrain.jpg" alt="Alpine terrain" loading="lazy">
+        <figcaption><b>Terrain</b> — shaded relief on real elevation</figcaption></figure>
+      <figure class="shot" data-scale><img src="assets/img/shot-population.jpg" alt="Population hexagons" loading="lazy">
+        <figcaption><b>Population</b> — density along the Indus corridor</figcaption></figure>
+      <figure class="shot" data-scale><img src="assets/img/shot-satellite.jpg" alt="Satellite imagery" loading="lazy">
+        <figcaption><b>Satellite</b> — Sindh, 30 August 2022</figcaption></figure>
+      <figure class="shot" data-scale><img src="assets/img/shot-before.jpg" alt="Satellite imagery before" loading="lazy">
+        <figcaption><b>Same place</b> — 15 July 2022, under monsoon cloud</figcaption></figure>
+      <figure class="shot" data-scale><img src="assets/img/shot-borders.jpg" alt="Borders over terrain" loading="lazy">
+        <figcaption><b>Borders</b> — Pakistan, drawn as the script names it</figcaption></figure>
+      <figure class="shot" data-scale><img src="assets/img/hero-poster.jpg" alt="Karakoram ridges" loading="lazy">
+        <figcaption><b>Karakoram</b> — glacial valleys at 60° pitch</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="cta-band center" data-scale>
+      <h2 class="display" style="position:relative">Your turn. <em>Pick a place.</em></h2>
+      <p class="lede" style="margin:18px auto 28px;position:relative">
+        One payment, unlimited renders, no map bill ever.
+      </p>
+      <a class="btn btn-primary btn-lg" href="pricing.html" style="position:relative">Get a licence <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><a class="brand" href="index.html"><span class="brand-mark"></span> spatialdata</a>
+        <p class="small" style="margin-top:14px;max-width:34ch">Geographic data into cinematic documentary video.</p></div>
+      <div><h4>Product</h4><nav><a href="features.html">Features</a><a href="gallery.html">Gallery</a>
+        <a href="pricing.html">Pricing</a><a href="docs.html">Docs</a></nav></div>
+      <div><h4>Data</h4><nav><a href="https://openstreetmap.org" rel="noopener">OpenStreetMap</a>
+        <a href="https://openfreemap.org" rel="noopener">OpenFreeMap</a>
+        <a href="https://nasa.gov" rel="noopener">NASA GIBS</a>
+        <a href="https://data.humdata.org" rel="noopener">Kontur</a></nav></div>
+      <div><h4>Legal</h4><nav><a href="docs.html#licence">Licence</a><a href="docs.html#attribution">Attribution</a></nav></div>
+    </div>
+    <div class="foot-base">
+      <span class="tiny">© <span data-year>2026</span> spatialdata.</span>
+      <span class="tiny">Map data © OpenStreetMap contributors · Imagery: NASA GIBS/EOSDIS · Population: Kontur (CC BY)</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/site.js"></script>
+</body>
+</html>

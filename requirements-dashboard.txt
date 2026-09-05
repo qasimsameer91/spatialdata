@@ -1,0 +1,8 @@
+# Dashboard-only dependencies for the hosted (Railway) deployment.
+#
+# Deliberately tiny: the hosted side stores job JSON, serves the static UI and
+# receives one finished MP4 per job. All rendering happens on the local worker,
+# so none of Playwright, ffmpeg, torch or Kokoro is needed or wanted here.
+fastapi>=0.110
+uvicorn>=0.27
+aiohttp>=3.9        # used by the place-search proxy (Nominatim)

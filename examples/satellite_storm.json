@@ -1,0 +1,19 @@
+{
+  "bbox": [-90.0, 22.0, -70.0, 34.0],
+  "place_name": "The Gulf Coast",
+  "title": "Season of Storms",
+  "date": "2024-09-26",
+  "basemap": "satellite",
+  "satellite_layer": "truecolor_viirs",
+  "weather_layer": "clouds",
+  "terrain": true,
+  "hillshade": false,
+  "overlays": ["weather", "borders"],
+  "narration": "From orbit, the storm is a single turning wheel of cloud. Below it, the coastline waits. Weather systems like this one shape where people can live.",
+  "tts_provider": "kokoro",
+  "tts_voice": "bm_george",
+  "duration_s": 14,
+  "width": 1920,
+  "height": 1080,
+  "fps": 30
+}

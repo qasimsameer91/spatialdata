@@ -1,0 +1,63 @@
+{
+  "_comment": "Before/after satellite comparison: the 2022 Indus floods in Sindh. `date` is the before image, `date_end` the after; the satellite_after overlay cross-fades between them on the narration cue.",
+
+  "bbox": [67.40, 25.40, 70.10, 28.60],
+  "place_name": "Sindh",
+  "title": "The Water Came",
+
+  "basemap": "vector",
+  "vector_style": "fiord",
+  "label_density": "minimal",
+  "terrain": true,
+  "hillshade": true,
+
+  "date": "2022-07-15",
+  "date_end": "2022-08-30",
+  "satellite_layer": "truecolor_viirs",
+  "overlays": ["satellite", "satellite_after", "borders"],
+
+  "shots": [
+    {
+      "_line": "0.0-5.0  In July 2022, the lower Indus looked like this.",
+      "type": "hold",
+      "camera": {"lng": 68.75, "lat": 27.00, "zoom": 7.0, "bearing": 0, "pitch": 30},
+      "duration": 5.4
+    },
+    {
+      "_line": "5.4-12.0  Then the monsoon arrived... a third of the country under water.",
+      "type": "orbit",
+      "center": [68.75, 27.00], "zoom": 7.0, "pitch": 34,
+      "bearing_from": 0, "degrees": 14,
+      "duration": 7.0, "ease": "smooth"
+    },
+    {
+      "_line": "12.0-18.0  Thirty three million people were affected.",
+      "type": "flyto",
+      "to": {"lng": 68.40, "lat": 26.60, "zoom": 7.6, "bearing": 18, "pitch": 42},
+      "duration": 6.0, "ease": "inout"
+    }
+  ],
+
+  "beats": [
+    {"t": 0.0,  "duration": 5.2,
+     "overlays": {"satellite": 1.0, "borders": 0.8},
+     "text": "In July 2022, the lower Indus looked like this."},
+    {"t": 5.4,  "duration": 6.4,
+     "overlays": {"satellite_after": 1.0, "borders": 0.8},
+     "text": "Six weeks later the monsoon had put a third of the country under water."},
+    {"t": 12.0, "duration": 6.0,
+     "overlays": {"satellite_after": 1.0, "borders": 0.9},
+     "text": "Thirty three million people were affected."}
+  ],
+
+  "narration": "In July 2022, the lower Indus looked like this. Six weeks later the monsoon had put a third of the country under water. Thirty three million people were affected.",
+
+  "tts_provider": "kokoro",
+  "tts_voice": "bm_george",
+  "music": "long_note_two.mp3",
+
+  "duration_s": 18,
+  "width": 1280,
+  "height": 720,
+  "fps": 30
+}

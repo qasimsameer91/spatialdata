@@ -1,0 +1,16 @@
+# Railway build for the DASHBOARD ONLY.
+#
+# The hosted side never renders: no Chromium, no ffmpeg, no Kokoro, no torch.
+# It serves the UI and the job queue, and the local worker polls it. That is
+# what keeps this deployment inside a free tier - it is a small JSON API with
+# a static frontend.
+providers = ["python"]
+
+[phases.setup]
+nixPkgs = ["python311"]
+
+[phases.install]
+cmds = ["pip install --no-cache-dir -r requirements-dashboard.txt"]
+
+[start]
+cmd = "python -m worker serve --no-worker --host 0.0.0.0"

@@ -1,0 +1,30 @@
+# Cached upstream tiles/styles/glyphs. Regenerated on demand; can be large.
+cache/
+
+# Render output: frames, previews, audio, MP4s.
+output/
+
+# Job queue state.
+jobs/
+
+# Bundled datasets are fetched by data/download_data.py, not committed.
+data/natural_earth/*.geojson
+data/kontur/*.gpkg
+data/kontur/*.gz
+data/music/*.mp3
+data/music/*.wav
+data/music/*.m4a
+
+# Local overrides (may contain a dashboard token).
+config/local.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db

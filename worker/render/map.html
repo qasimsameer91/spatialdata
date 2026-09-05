@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>spatialdata render surface</title>
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<style>
+  html, body { margin: 0; padding: 0; background: #04070d; overflow: hidden; }
+  #map { position: absolute; inset: 0; }
+  /* The renderer screenshots the whole viewport, so nothing else may paint. */
+  .maplibregl-control-container { display: none !important; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="vendor/maplibre-gl.js"></script>
+<script>
+/*
+ * Render surface driven by worker/render/capture.py over Playwright.
+ *
+ * The contract is deliberately narrow and synchronous-looking:
+ *   await window.__sd.init(config)      -> boot the map, resolve when first idle
+ *   await window.__sd.frame(cam, ovl)   -> set camera + overlays, resolve when settled
+ *
+ * Determinism is the whole point here. Anything that animates on a timer
+ * (fades, easing, tile pop-in) would make two runs of the same camera track
+ * produce different pixels, so all of it is disabled: fadeDuration is 0, the
+ * camera is moved with jumpTo (never flyTo/easeTo), and every frame waits for
+ * the map to be genuinely settled before the screenshot is taken.
+ */
+(function () {
+  "use strict";
+
+  // Overlay name -> style layer ids. The worker sends this in the init config
+  // so there is exactly one definition (OVERLAY_LAYERS in style.py). Keeping a
+  // second copy here meant a newly added overlay was registered on the Python
+  // side, built into the style, and then never unhidden by this page - it
+  // simply never rendered, with nothing in any log to say why.
+  let OVERLAY_LAYERS = {
+    satellite:  ["sd-satellite-raster"],
+    weather:    ["sd-weather-raster"],
+    population: ["sd-population-fill"],
+    borders:    ["sd-borders-glow", "sd-borders-line"]
+  };
+
+  // The glow sits under the crisp border line, so its opacity tracks the
+  // requested value at a fraction of it rather than matching it.
+  const OPACITY_SCALE = { "sd-borders-glow": 0.28 };
+
+  const OPACITY_PROP = {
+    raster: "raster-opacity",
+    fill:   "fill-opacity",
+    line:   "line-opacity",
+    symbol: "icon-opacity"
+  };
+
+  let map = null;
+  let config = null;
+  const errors = [];
+  let lastOverlayKey = null;
+
+  const nextFrame = () => new Promise(requestAnimationFrame);
+
+  function recordError(kind, err) {
+    const msg = (err && (err.message || err.error || err)) + "";
+    // Missing tiles are reported by the server side as cache misses; keeping
+    // every one of them here would swamp the diagnostics for a large render.
+    if (errors.length < 50) errors.push(kind + ": " + msg);
+  }
+
+  window.addEventListener("error", (e) => recordError("window", e.message));
+  window.addEventListener("unhandledrejection", (e) => recordError("promise", e.reason));
+
+  /** Resolve once the map has nothing left to load, paint or move. */
+  async function waitSettled(timeoutMs) {
+    const t0 = performance.now();
+    // Let MapLibre notice the new camera and start any tile requests before
+    // we begin asking whether it is finished.
+    await nextFrame();
+    await nextFrame();
+
+    while (performance.now() - t0 < timeoutMs) {
+      const quiet = map.loaded() && map.areTilesLoaded() && !map.isMoving();
+      if (quiet) {
+        // Two more frames guarantees the settled state was actually painted
+        // into the framebuffer that the screenshot will capture.
+        await nextFrame();
+        await nextFrame();
+        if (map.loaded() && map.areTilesLoaded() && !map.isMoving()) {
+          return { settled: true, waitMs: Math.round(performance.now() - t0) };
+        }
+      }
+      await nextFrame();
+    }
+    return { settled: false, timedOut: true, waitMs: Math.round(performance.now() - t0) };
+  }
+
+  // A layer's opacity may be a data-driven expression rather than a constant
+  // -- the population choropleth ramps opacity with density so empty ground
+  // stays clear. Overwriting that with the beat's fade value would flatten it
+  // into a uniform wash, so the base value is captured once and the fade is
+  // applied as a multiplier on top of it.
+  const baseOpacity = {};
+
+  function captureBaseOpacity() {
+    for (const name in OVERLAY_LAYERS) {
+      for (const id of OVERLAY_LAYERS[name]) {
+        const layer = map.getLayer(id);
+        if (!layer) continue;
+        const prop = OPACITY_PROP[layer.type];
+        if (!prop) continue;
+        let base = map.getPaintProperty(id, prop);
+        if (base === undefined) base = 1;
+        baseOpacity[id] = base;
+      }
+    }
+  }
+
+  function setLayerOpacity(id, value) {
+    const layer = map.getLayer(id);
+    if (!layer) return;
+    const prop = OPACITY_PROP[layer.type];
+    if (!prop) return;
+    const factor = value * (OPACITY_SCALE[id] !== undefined ? OPACITY_SCALE[id] : 1);
+    const base = baseOpacity[id];
+    if (typeof base === "number") {
+      map.setPaintProperty(id, prop, base * factor);
+    } else {
+      // Expression: scale it rather than discard it.
+      map.setPaintProperty(id, prop, ["*", base, factor]);
+    }
+  }
+
+  /**
+   * Apply an overlay state map, e.g. {borders:{visible:true,opacity:0.9}}.
+   * Overlays not named in the spec are hidden, so a beat fully describes the
+   * frame rather than inheriting stale state from an earlier one.
+   */
+  function applyOverlays(spec) {
+    spec = spec || {};
+    // Re-applying identical overlay state would still dirty the map and cost
+    // a repaint, so skip it when nothing changed between consecutive frames.
+    const key = JSON.stringify(spec);
+    if (key === lastOverlayKey) return false;
+    lastOverlayKey = key;
+
+    for (const name in OVERLAY_LAYERS) {
+      const state = spec[name] || {};
+      const visible = !!state.visible && (state.opacity === undefined || state.opacity > 0.001);
+      for (const id of OVERLAY_LAYERS[name]) {
+        if (!map.getLayer(id)) continue;
+        map.setLayoutProperty(id, "visibility", visible ? "visible" : "none");
+        if (visible && typeof state.opacity === "number") setLayerOpacity(id, state.opacity);
+      }
+    }
+    return true;
+  }
+
+  function applyCamera(cam) {
+    const opts = {
+      center: [cam.lng, cam.lat],
+      zoom: cam.zoom,
+      bearing: cam.bearing || 0,
+      pitch: cam.pitch || 0
+    };
+    // With terrain on, MapLibre clamps the camera centre to the ground by
+    // default, so the shot lurches upward every time a ridge passes beneath
+    // it. When the worker supplies a stabilised elevation we take that over
+    // instead, and the camera flies a smooth line over the landscape.
+    if (typeof cam.elevation === "number") opts.elevation = cam.elevation;
+    map.jumpTo(opts);
+  }
+
+  window.__sd = {
+    /** Boot the map. Resolves once the style and first tiles are loaded. */
+    async init(cfg) {
+      config = cfg;
+      if (cfg.overlayLayers && Object.keys(cfg.overlayLayers).length) {
+        OVERLAY_LAYERS = cfg.overlayLayers;
+      }
+      map = new maplibregl.Map({
+        container: "map",
+        style: cfg.styleUrl,
+        center: [cfg.camera.lng, cfg.camera.lat],
+        zoom: cfg.camera.zoom,
+        bearing: cfg.camera.bearing || 0,
+        pitch: cfg.camera.pitch || 0,
+        maxPitch: 85,
+        // Determinism knobs.
+        fadeDuration: 0,
+        interactive: false,
+        attributionControl: false,
+        preserveDrawingBuffer: true,
+        refreshExpiredTiles: false,
+        antialias: true,
+        trackResize: false,
+        validateStyle: false
+      });
+
+      map.on("error", (e) => recordError("map", e && e.error));
+
+      await new Promise((resolve, reject) => {
+        const failTimer = setTimeout(
+          () => reject(new Error("style load timed out after " + cfg.loadTimeoutMs + "ms")),
+          cfg.loadTimeoutMs || 60000
+        );
+        map.once("load", () => { clearTimeout(failTimer); resolve(); });
+      });
+
+      if (cfg.terrainExaggeration && map.getSource("sd-terrain")) {
+        map.setTerrain({ source: "sd-terrain", exaggeration: cfg.terrainExaggeration });
+      }
+      // Must be off before any elevation we pass is honoured.
+      if (cfg.stabiliseElevation && map.setCenterClampedToGround) {
+        map.setCenterClampedToGround(false);
+      }
+      captureBaseOpacity();
+      applyOverlays(cfg.overlays);
+      const settle = await waitSettled(cfg.idleTimeoutMs || 30000);
+      return Object.assign({ ok: true, errors: errors.slice() }, settle);
+    },
+
+    /** Set camera + overlay state and resolve when the frame is ready to grab. */
+    async frame(cam, overlays) {
+      applyOverlays(overlays);
+      applyCamera(cam);
+      const settle = await waitSettled((config && config.idleTimeoutMs) || 20000);
+      return settle;
+    },
+
+    /** Diagnostics pulled after a render finishes. */
+    report() {
+      return {
+        errors: errors.slice(),
+        center: map ? map.getCenter().toArray() : null,
+        zoom: map ? map.getZoom() : null,
+        terrain: !!(map && map.getTerrain && map.getTerrain())
+      };
+    }
+  };
+})();
+</script>
+</body>
+</html>

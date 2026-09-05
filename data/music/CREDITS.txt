@@ -1,0 +1,15 @@
+Starter music bundled with spatialdata
+=======================================
+
+All tracks by Kevin MacLeod (incompetech.com), licensed under
+Creative Commons: By Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+
+The render pipeline burns an attribution credit into every video, but if you
+publish a video using one of these beds you should keep the music credit in
+your description too:
+
+    Music by Kevin MacLeod (incompetech.com), CC BY 4.0
+
+Replace these with your own tracks by dropping audio files into this folder;
+they show up in the dashboard's music picker automatically.

@@ -1,0 +1,19 @@
+{
+  "bbox": [7.30, 45.75, 8.20, 46.30],
+  "place_name": "The Alps",
+  "title": "The Alps",
+  "basemap": "vector",
+  "vector_style": "fiord",
+  "label_density": "minimal",
+  "terrain": true,
+  "hillshade": true,
+  "overlays": ["borders", "population"],
+  "narration": "The Alps rise along the border between Switzerland and Italy. Shaped over thirty million years, they form a wall of rock and ice. Today, nearly fourteen million people live in the valleys below.",
+  "tts_provider": "kokoro",
+  "tts_voice": "bm_george",
+  "music": "long_note_two.mp3",
+  "duration_s": 12,
+  "width": 1920,
+  "height": 1080,
+  "fps": 30
+}
