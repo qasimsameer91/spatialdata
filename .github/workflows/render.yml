@@ -1,0 +1,199 @@
+# Renders a film in the cloud, with your own machine switched off.
+#
+# Public repositories get unlimited free Actions minutes, so this costs
+# nothing. The runner has no GPU, so rendering falls to SwiftShader software
+# rendering -- 3D terrain still works, it is just slow. config/cloud.json caps
+# the output to a size that finishes inside the 6-hour job limit.
+#
+# Rough budget on a 4-core runner: a 20-second film with terrain takes about
+# 1-1.5 hours. Setup (deps, browser, data) is cached after the first run.
+name: Render a film
+
+on:
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Example name (indus, alps, city_population, satellite_storm, indus_flood_2022) or a whole job JSON document'
+        required: true
+        default: 'alps'
+      duration:
+        description: 'Override the film length in seconds (blank = as written in the job)'
+        required: false
+        default: ''
+      narration:
+        description: 'Render the voiceover (needs ~2 GB of extra dependencies)'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: render-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    # The hard ceiling for a GitHub-hosted runner is 360 minutes; stop short of
+    # it so the artifact upload still happens instead of the job being killed.
+    timeout-minutes: 330
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Resolve the job
+        id: job
+        run: python scripts/cloud_job.py "${{ inputs.job }}" .render/job.json
+
+      - name: Apply the duration override
+        if: inputs.duration != ''
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, sys
+          seconds = float(os.environ["DURATION"])
+          if not 0.5 <= seconds <= 900:
+              sys.exit(f"duration must be 0.5..900 seconds, got {seconds}")
+          path = pathlib.Path(".render/job.json")
+          data = json.loads(path.read_text())
+          data["duration_s"] = seconds
+          path.write_text(json.dumps(data, indent=2))
+          print(f"duration_s set to {seconds}")
+          PY
+        env:
+          DURATION: ${{ inputs.duration }}
+
+      - name: Drop the narration
+        if: inputs.narration != true
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          path = pathlib.Path(".render/job.json")
+          data = json.loads(path.read_text())
+          data["narration"] = ""
+          path.write_text(json.dumps(data, indent=2))
+          print("narration cleared - the film will run on its own duration")
+          PY
+
+      - name: Install ffmpeg
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
+          ffmpeg -hide_banner -version | head -1
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ "${{ inputs.narration }}" = "true" ]; then
+            # The CPU-only torch wheel: a tenth of the size of the CUDA one,
+            # and there is no GPU here to use anyway.
+            pip install --extra-index-url https://download.pytorch.org/whl/cpu \
+              -r requirements.txt
+          else
+            # Skip kokoro / faster-whisper entirely when there is no voiceover.
+            grep -v -E '^(kokoro|soundfile|faster-whisper)' requirements.txt \
+              > /tmp/req-silent.txt
+            pip install -r /tmp/req-silent.txt
+          fi
+
+      - name: Cache the Chromium build
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
+      - name: Install Chromium
+        run: python -m playwright install --with-deps chromium
+
+      - name: Cache the bundled datasets
+        uses: actions/cache@v4
+        with:
+          # Natural Earth borders, the music beds, and whichever Kontur
+          # population file this job needs. Downloading these every run would
+          # be rude to the hosts as well as slow.
+          path: |
+            data/natural_earth
+            data/music
+            data/kontur
+          key: data-${{ steps.job.outputs.kontur || 'none' }}-${{ hashFiles('data/download_data.py') }}
+
+      - name: Download the datasets
+        run: |
+          ARGS="--natural-earth --music"
+          if [ -n "${{ steps.job.outputs.kontur }}" ]; then
+            ARGS="$ARGS --kontur ${{ steps.job.outputs.kontur }}"
+          fi
+          python data/download_data.py $ARGS
+
+      - name: Cache the map tiles
+        uses: actions/cache@v4
+        with:
+          path: cache
+          key: tiles-${{ steps.job.outputs.slug }}-${{ github.run_id }}
+          # Reuse the previous run's tiles for the same place, then any run's,
+          # so a repeat render mostly skips the download.
+          restore-keys: |
+            tiles-${{ steps.job.outputs.slug }}-
+            tiles-
+
+      - name: Check the environment
+        env:
+          SPATIALDATA_PROFILE: cloud
+        run: python -m worker doctor || true
+
+      - name: Render
+        env:
+          SPATIALDATA_PROFILE: cloud
+        run: python -m worker render --job .render/job.json --id cloud
+
+      - name: Summarise
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          out = pathlib.Path("output/cloud")
+          mp4 = out / "cloud.mp4"
+          summary = pathlib.Path(os.environ["GITHUB_STEP_SUMMARY"]) if (
+              os.environ.get("GITHUB_STEP_SUMMARY")) else None
+          lines = ["## Render result", ""]
+          if mp4.is_file():
+              lines.append(f"- **Video** `{mp4.name}`, "
+                           f"{mp4.stat().st_size / 1e6:.1f} MB")
+          else:
+              lines.append("- No video was produced.")
+          stats = out / "stats.json"
+          if stats.is_file():
+              d = json.loads(stats.read_text())
+              r = d.get("render", {})
+              lines.append(f"- **Frames** {d.get('frames', '?')} at "
+                           f"{r.get('render_fps', '?')} fps")
+              lines.append(f"- **Renderer** {r.get('renderer', 'unknown')}")
+              lines.append(f"- **Total** {d.get('total_s', '?')} s")
+          text = "\n".join(lines)
+          print(text)
+          if summary:
+              summary.write_text(text)
+          PY
+        shell: bash
+
+      - name: Upload the film
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: film-${{ steps.job.outputs.slug }}
+          # The MP4 plus the things that explain it. Frames are excluded --
+          # there are thousands and they are already in the video.
+          path: |
+            output/cloud/*.mp4
+            output/cloud/beats.json
+            output/cloud/camera_track.json
+            output/cloud/stats.json
+            output/cloud/previews/*
+          if-no-files-found: warn
+          retention-days: 14

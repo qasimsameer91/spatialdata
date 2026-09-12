@@ -67,7 +67,7 @@ class Pipeline:
         stats: dict[str, object] = {}
         started = time.time()
 
-        width, height, fps = spec.width, spec.height, spec.fps
+        width, height, fps = self._capped_output(spec)
         self._check_disk(spec, out_dir)
 
         # ------------------------------------------ 0. voiceover (first)
@@ -193,6 +193,7 @@ class Pipeline:
                 terrain_exaggeration=float(
                     self.cfg.get("render.terrain_exaggeration", 1.3)),
                 idle_timeout_s=float(self.cfg.get("render.idle_timeout_s", 20.0)),
+                gpu=bool(self.cfg.get("render.gpu", True)),
                 stabilise_elevation=bool(spec.terrain),
             ) as renderer:
                 result = renderer.render_track(
@@ -275,6 +276,15 @@ class Pipeline:
             "duration_s": round(encode.duration_of(mp4), 2),
         }
         stats["total_s"] = round(time.time() - started, 1)
+
+        # The render's own account of itself, next to the film rather than
+        # only in the job queue, so an output directory copied somewhere else
+        # still explains how it was made.
+        stats_path = out_dir / "stats.json"
+        stats_path.write_text(json.dumps(stats, indent=2, default=str),
+                              encoding="utf-8")
+        artifacts["stats"] = str(stats_path)
+
         self._emit("done", 1.0, f"rendered {mp4.name}")
         return {"artifacts": artifacts, "stats": stats}
 
@@ -286,6 +296,40 @@ class Pipeline:
         if spec.basemap == "vector":
             docs.append(("ofm", vector_style_path(spec.vector_style)))
         return docs
+
+    def _capped_output(self, spec: JobSpec) -> tuple[int, int, int]:
+        """Fit the job's requested output inside this machine's ceilings.
+
+        A CPU-only runner cannot finish 1920x1080 with 3D terrain in any
+        reasonable time, but the same job file should still work there. Rather
+        than refuse it, scale it down: the aspect ratio is preserved and both
+        dimensions stay even, which h264 requires.
+        """
+        width, height, fps = spec.width, spec.height, spec.fps
+
+        max_w = self.cfg.get("render.max_width")
+        max_h = self.cfg.get("render.max_height")
+        scale = 1.0
+        if max_w:
+            scale = min(scale, int(max_w) / width)
+        if max_h:
+            scale = min(scale, int(max_h) / height)
+        if scale < 1.0:
+            # Round to even; never collapse a dimension below the 160 floor
+            # that JobSpec.validate enforces.
+            width = max(160, int(width * scale) // 2 * 2)
+            height = max(160, int(height * scale) // 2 * 2)
+
+        max_fps = self.cfg.get("render.max_fps")
+        if max_fps:
+            fps = min(fps, int(max_fps))
+
+        if (width, height, fps) != (spec.width, spec.height, spec.fps):
+            log.warning(
+                "output capped to %dx%d @%dfps (job asked for %dx%d @%dfps) "
+                "- this machine's render.max_* ceiling",
+                width, height, fps, spec.width, spec.height, spec.fps)
+        return width, height, fps
 
     def _check_disk(self, spec: JobSpec, out_dir: Path) -> None:
         """Refuse to start a render that cannot fit on disk.

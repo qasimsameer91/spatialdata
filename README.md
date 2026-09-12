@@ -279,10 +279,58 @@ python tests/test_population_reader.py
 
 ---
 
+## Rendering in the cloud, with your machine off
+
+`.github/workflows/render.yml` renders a film on a GitHub Actions runner.
+Public repositories get unlimited free Actions minutes, so this costs nothing
+and needs no account anywhere else.
+
+Actions → **Render a film** → Run workflow. Give it an example name
+(`alps`, `indus`, …) or paste a whole job document, and collect the MP4 from
+the run's artifacts.
+
+The runner has no GPU, so Chromium falls back to SwiftShader software
+rendering. **3D terrain still works** — it is simply slow, so
+`config/cloud.json` trades resolution and terrain detail for a render that
+finishes:
+
+| | this desktop, GPU | this desktop, CPU only | 4-core runner (est.) |
+|---|---|---|---|
+| 3D terrain, 854×480 | — | **1.6 fps** | ~0.5 fps |
+| 3D terrain, 1920×1080 | 5.0 fps | impractical | impractical |
+
+At roughly 0.5 fps a 20-second film is about 90 minutes of runner time, well
+inside the 6-hour limit on a single job. Dependencies, the Chromium build, the
+bundled datasets and the tile cache are all cached between runs, so only the
+first run pays for setup.
+
+What the cloud profile changes, and why:
+
+| Key | Cloud value | Reason |
+|---|---|---|
+| `render.gpu` | `false` | go straight to SwiftShader instead of failing to get a GL context |
+| `render.max_width` / `max_height` | `854` / `480` | the job file is scaled to fit rather than rejected |
+| `render.max_fps` | `24` | a fifth fewer frames to draw than 30 |
+| `render.terrain_maxzoom` | `8` | DEM detail is where software rendering spends its time |
+| `render.idle_timeout_s` | `90` | a software frame legitimately takes longer to settle |
+| `encode.encoder` | `libx264` | there is no AMD card on a runner |
+| `tts.whisper_model` | `tiny.en` | alignment on 4 cores |
+
+Select the profile locally the same way the workflow does:
+
+```bash
+SPATIALDATA_PROFILE=cloud python -m worker render --job examples/alps.json
+```
+
+---
+
 ## Configuration
 
-`config/default.json` → `config/local.json` → per-job settings, last wins. The
-dashboard's Settings tab writes `config/local.json`.
+`config/default.json` → `config/<profile>.json` → `config/local.json` →
+per-job settings, last wins. The profile layer is chosen with the
+`SPATIALDATA_PROFILE` environment variable and is how the cloud renderer
+reduces quality without editing any tracked job. The dashboard's Settings tab
+writes `config/local.json`.
 
 | Key | Default | Meaning |
 |---|---|---|
@@ -294,6 +342,8 @@ dashboard's Settings tab writes `config/local.json`.
 | `render.elevation_smoothing_s` | `2.5` | low-pass window on the camera height |
 | `prefetch.tile_padding` | `1` | extra ring of tiles around each frame |
 | `encode.encoder` | `h264_amf` | falls back to libx264 only if AMF is absent |
+| `render.gpu` | `true` | `false` forces SwiftShader software rendering |
+| `render.max_width` / `max_height` / `max_fps` | `null` | ceilings a job is scaled down to fit |
 | `overlays.population.opacity` | `0.68` | peak choropleth opacity |
 | `audio.music_gain_db` / `duck_gain_db` | `-22` / `-14` | music bed, and how far it ducks |
 

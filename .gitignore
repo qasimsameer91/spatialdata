@@ -28,3 +28,6 @@ venv/
 # OS
 .DS_Store
 Thumbs.db
+
+# Job document materialised by the cloud render workflow.
+.render/

@@ -222,6 +222,12 @@ def assemble(
         "-colorspace", "bt709",
         "-color_primaries", "bt709",
         "-color_trc", "bt709",
+        # The flags above reach the container but neither h264_amf nor libx264
+        # writes primaries and transfer into the H.264 VUI, so a player reads
+        # them as unspecified and may guess BT.601. Stamping the bitstream
+        # afterwards is encoder-independent and fixes both. 1 = BT.709.
+        "-bsf:v", ("h264_metadata=colour_primaries=1"
+                   ":transfer_characteristics=1:matrix_coefficients=1"),
         "-movflags", "+faststart",
         str(out_path),
     ]

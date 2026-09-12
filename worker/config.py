@@ -1,7 +1,12 @@
 """Configuration loading and defaults for the spatialdata render worker.
 
 Settings resolve in this order (last wins):
-    built-in DEFAULTS  ->  config/default.json  ->  config/local.json  ->  per-job overrides
+    built-in DEFAULTS  ->  config/default.json  ->  config/<profile>.json
+    ->  config/local.json  ->  per-job overrides
+
+The profile layer is selected with the SPATIALDATA_PROFILE environment
+variable, so one checkout can render at full quality on a GPU box and at
+reduced settings on a CPU-only runner without editing any tracked file.
 """
 from __future__ import annotations
 
@@ -12,6 +17,9 @@ from pathlib import Path
 from typing import Any, Dict
 
 ROOT = Path(__file__).resolve().parent.parent
+
+# A profile name becomes a filename, so it may not contain path separators.
+_PROFILE_RE = __import__("re").compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,31}$")
 
 DEFAULTS: Dict[str, Any] = {
     "paths": {
@@ -24,11 +32,23 @@ DEFAULTS: Dict[str, Any] = {
         "width": 1920,
         "height": 1080,
         "fps": 30,
+        # Ceilings the machine imposes on whatever the job file asks for.
+        # null = no ceiling. A job is downscaled to fit, keeping its aspect
+        # ratio, rather than being rejected -- the same job file should render
+        # on a GPU box at full size and on a CPU runner at a size it can
+        # actually finish.
+        "max_width": None,
+        "max_height": None,
+        "max_fps": None,
         "pixel_ratio": 1,
         # How the local tile server behaves on a cache miss during rendering.
         #   "warn"    -> fetch upstream, log loudly (safe default, never breaks a render)
         #   "offline" -> refuse, serve placeholder (guarantees zero live requests mid-frame)
         "miss_policy": "warn",
+        # Ask Chromium for a hardware GL context. Set false on a machine with
+        # no GPU (a CI runner) to go straight to SwiftShader software rendering
+        # instead of failing to get a WebGL context at all.
+        "gpu": True,
         # Max wall-clock seconds to wait for the map to settle before capturing a frame.
         "idle_timeout_s": 20.0,
         "terrain_exaggeration": 1.3,
@@ -136,10 +156,21 @@ class Config:
     @classmethod
     def load(cls, overrides: Dict[str, Any] | None = None, root: Path = ROOT) -> "Config":
         merged = copy.deepcopy(DEFAULTS)
-        for name in ("default.json", "local.json"):
+        profile = os.environ.get("SPATIALDATA_PROFILE", "").strip()
+        names = ["default.json"]
+        if profile:
+            if not _PROFILE_RE.match(profile):
+                raise ValueError(
+                    f"SPATIALDATA_PROFILE={profile!r} is not a plain profile name")
+            names.append(f"{profile}.json")
+        names.append("local.json")
+        for name in names:
             path = root / "config" / name
             if path.is_file():
                 merged = _deep_merge(merged, json.loads(path.read_text(encoding="utf-8")))
+            elif name == f"{profile}.json":
+                raise FileNotFoundError(
+                    f"SPATIALDATA_PROFILE={profile!r} but config/{name} does not exist")
         if overrides:
             merged = _deep_merge(merged, overrides)
         return cls(merged, root)

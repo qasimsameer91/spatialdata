@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -25,8 +26,12 @@ log = get_logger("render.capture")
 # Headless Chromium needs to be told to produce a real GL context. We try the
 # GPU-backed ANGLE path first and fall back to SwiftShader, which is slower but
 # works on any machine.
+# The ANGLE backend is platform-specific: d3d11 exists only on Windows, and
+# asking for it elsewhere leaves Chromium with no GL at all rather than
+# falling back, so pick the backend that the host can actually provide.
+_ANGLE_BACKEND = {"win32": "d3d11", "darwin": "metal"}.get(sys.platform, "gl")
 _GPU_FLAGS = [
-    "--use-angle=d3d11",
+    f"--use-angle={_ANGLE_BACKEND}",
     "--ignore-gpu-blocklist",
     "--enable-gpu-rasterization",
 ]
@@ -203,6 +208,11 @@ class FrameRenderer:
         shot_kwargs: dict = {"type": self.image_format}
         if self.image_format == "jpeg":
             shot_kwargs["quality"] = self.jpeg_quality
+        # Playwright's screenshot timeout defaults to 30s, which is fine on a
+        # GPU but not on SwiftShader, where a single 3D-terrain frame can take
+        # longer than that. Without this, CPU-only rendering fails outright
+        # rather than merely being slow.
+        shot_kwargs["timeout"] = max(30_000, int(self.idle_timeout_s * 1000) * 3)
 
         preview_set = set(preview_at)
         previews: list[Path] = []
@@ -260,5 +270,6 @@ class FrameRenderer:
         path.parent.mkdir(parents=True, exist_ok=True)
         kwargs: dict = {"type": "png"} if path.suffix == ".png" else {
             "type": "jpeg", "quality": self.jpeg_quality}
+        kwargs["timeout"] = max(30_000, int(self.idle_timeout_s * 1000) * 3)
         self._page.screenshot(path=str(path), **kwargs)
         return path

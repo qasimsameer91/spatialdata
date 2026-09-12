@@ -1,0 +1,36 @@
+{
+  "_comment": [
+    "Profile for rendering on a CPU-only machine (a GitHub Actions runner).",
+    "Selected with SPATIALDATA_PROFILE=cloud. 3D terrain is kept on; the",
+    "settings below are what make it finish in software rendering instead of",
+    "stalling. Measured on a 12-core desktop with no GPU: 0.42 fps at these",
+    "settings with terrain, against 5.0 fps for the same track on the GPU.",
+    "A 4-core runner is roughly 3x slower again."
+  ],
+  "render": {
+    "gpu": false,
+    "width": 854,
+    "height": 480,
+    "fps": 24,
+    "max_width": 854,
+    "max_height": 480,
+    "max_fps": 24,
+    "terrain_maxzoom": 8,
+    "elevation_sample_zoom": 9,
+    "idle_timeout_s": 90.0,
+    "miss_policy": "warn"
+  },
+  "prefetch": {
+    "concurrency": 4,
+    "requests_per_second": 8.0
+  },
+  "encode": {
+    "encoder": "libx264",
+    "quality": "medium",
+    "qp_i": 20,
+    "qp_p": 23
+  },
+  "tts": {
+    "whisper_model": "tiny.en"
+  }
+}
