@@ -1,11 +1,13 @@
 # Cached upstream tiles/styles/glyphs. Regenerated on demand; can be large.
-cache/
+# Anchored: an unanchored "cache/" also matched worker/cache/, which silently
+# kept the tile-server package itself out of the repository.
+/cache/
 
 # Render output: frames, previews, audio, MP4s.
-output/
+/output/
 
 # Job queue state.
-jobs/
+/jobs/
 
 # Bundled datasets are fetched by data/download_data.py, not committed.
 data/natural_earth/*.geojson
