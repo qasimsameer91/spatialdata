@@ -23,7 +23,7 @@ from typing import Callable, Iterable, Optional, Sequence
 
 from .camera import CameraState
 from .cache.fetch import Fetcher, FetchStats
-from .frustum import camera_bbox, source_zoom
+from .frustum import camera_bbox, near_field_bbox, source_zoom
 from .log import get as get_logger
 from .sources.upstreams import split_url
 from .tiles import BBox, tiles_for_bbox
@@ -177,6 +177,11 @@ def _fontstacks(style: dict) -> set[str]:
     return stacks or {"Noto Sans Regular"}
 
 
+# How much of the viewport, measured from the bottom edge, MapLibre may fetch
+# one zoom level deeper than the frame's nominal zoom.
+NEAR_FIELD_FRACTION = 0.5
+
+
 def _terrain_margin(pitch: float) -> float:
     """Fractional bbox growth to cover terrain that a flat frustum misses.
 
@@ -213,17 +218,26 @@ def plan_tiles(
 
     # Frames overwhelmingly overlap, so cache the per-frame footprint by a
     # rounded camera signature to avoid recomputing near-identical boxes.
-    box_cache: dict[tuple, BBox] = {}
+    box_cache: dict[tuple, tuple[BBox, BBox | None]] = {}
 
     for cam in track:
         key = (round(cam.lng, 4), round(cam.lat, 4), round(cam.zoom, 2),
                round(cam.bearing, 1), round(cam.pitch, 1))
-        bbox = box_cache.get(key)
-        if bbox is None:
+        cached = box_cache.get(key)
+        if cached is None:
             bbox = camera_bbox(cam, width, height)
+            near = None
             if terrain:
                 bbox = bbox.padded(_terrain_margin(cam.pitch))
-            box_cache[key] = bbox
+                # Terrain raises the ground toward the camera, so MapLibre
+                # fetches the near half of the frame a level deeper than the
+                # frame's nominal zoom. Planning only the nominal zoom left
+                # those tiles to be fetched live, mid-render.
+                near = near_field_bbox(cam, width, height,
+                                       fraction=NEAR_FIELD_FRACTION)
+            cached = (bbox, near)
+            box_cache[key] = cached
+        bbox, near = cached
 
         for src in sources:
             z = source_zoom(cam.zoom, src.tile_size,
@@ -242,7 +256,11 @@ def plan_tiles(
                         "deliberately."
                     )
 
-            for (tz, tx, ty) in tiles_for_bbox(bbox, z, padding=padding):
+            planned = list(tiles_for_bbox(bbox, z, padding=padding))
+            if near is not None and z < src.maxzoom:
+                planned += tiles_for_bbox(near, z + 1, padding=padding)
+
+            for (tz, tx, ty) in planned:
                 add(tz, tx, ty)
                 if not include_ancestors:
                     continue

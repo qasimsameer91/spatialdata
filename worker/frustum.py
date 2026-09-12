@@ -104,6 +104,32 @@ def ground_points(cam: CameraState, width: int, height: int, *,
     return out
 
 
+def near_field_bbox(cam: CameraState, width: int, height: int, *,
+                    fraction: float = 0.5, fov: float = DEFAULT_FOV,
+                    samples: int = 5) -> BBox:
+    """Ground bbox of the nearest `fraction` of the viewport.
+
+    MapLibre does not request one zoom level per frame. It subdivides by
+    distance, so ground close to the camera is fetched a level deeper than
+    ground at the horizon. With 3D terrain that effect is stronger still,
+    because high ground stands closer to the camera than the flat plane the
+    frustum maths assumes. This box is where that extra level is needed.
+    """
+    pts = ground_points(cam, width, height, fov=fov, samples=samples)
+    # ground_points walks x in the outer loop and y in the inner one, so the
+    # row index is k % samples, and the last rows are the bottom of the screen
+    # -- the ground nearest the camera.
+    first_near_row = int(samples * (1.0 - max(0.0, min(1.0, fraction))))
+    near = [p for k, p in enumerate(pts) if (k % samples) >= first_near_row]
+    lngs = [p[0] for p in near]
+    lats = [p[1] for p in near]
+    west, east = min(lngs), max(lngs)
+    if east - west > 180.0:
+        west, east = -180.0, 180.0
+    return BBox(max(-180.0, west), clamp_lat(min(lats)),
+                min(180.0, east), clamp_lat(max(lats)))
+
+
 def camera_bbox(cam: CameraState, width: int, height: int, *,
                 fov: float = DEFAULT_FOV) -> BBox:
     """Axis-aligned ground bbox visible from this camera state."""
