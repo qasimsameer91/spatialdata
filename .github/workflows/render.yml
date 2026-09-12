@@ -28,9 +28,11 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: render-${{ github.ref }}
-  cancel-in-progress: false
+# No concurrency group, deliberately. Films do not conflict with each other,
+# and a shared group is actively harmful: GitHub keeps only one pending run
+# per group and cancels the rest, so dispatching five renders would run one,
+# queue one and silently discard three. Without a group, runs execute in
+# parallel up to the account's concurrent-job limit and wait beyond it.
 
 jobs:
   render:
@@ -196,4 +198,6 @@ jobs:
             output/cloud/stats.json
             output/cloud/previews/*
           if-no-files-found: warn
-          retention-days: 14
+          # Artifact storage on a free account is 500 MB, and usage is blocked
+          # once it is used up. Download the film, then let it expire.
+          retention-days: 3
