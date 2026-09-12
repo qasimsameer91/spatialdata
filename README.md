@@ -294,15 +294,21 @@ rendering. **3D terrain still works** — it is simply slow, so
 `config/cloud.json` trades resolution and terrain detail for a render that
 finishes:
 
-| | this desktop, GPU | this desktop, CPU only | 4-core runner (est.) |
+All three figures below are measured, not estimated; the runner column comes
+from an 8-second Alps flyover rendered on a GitHub-hosted `ubuntu-latest`:
+
+| | this desktop, GPU | this desktop, CPU only | GitHub runner, 4 cores |
 |---|---|---|---|
-| 3D terrain, 854×480 | — | **1.6 fps** | ~0.5 fps |
+| 3D terrain, 854×480 | — | 1.6 fps | **2.0 fps** |
 | 3D terrain, 1920×1080 | 5.0 fps | impractical | impractical |
 
-At roughly 0.5 fps a 20-second film is about 90 minutes of runner time, well
-inside the 6-hour limit on a single job. Dependencies, the Chromium build, the
-bundled datasets and the tile cache are all cached between runs, so only the
-first run pays for setup.
+The runner is no slower than a CPU-only desktop render, so a 20-second film is
+roughly four minutes of frames, and the whole job — checkout, dependencies,
+render, encode, upload — finishes in well under ten. That is far inside the
+six-hour limit on a single job.
+
+Dependencies, the Chromium build, the bundled datasets and the tile cache are
+all cached between runs, so only the first run pays for setup.
 
 What the cloud profile changes, and why:
 
