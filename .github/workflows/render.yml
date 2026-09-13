@@ -152,6 +152,8 @@ jobs:
       - name: Render
         env:
           SPATIALDATA_PROFILE: cloud
+          # Only used when a job picks the paid 'ai33' voice. Unset is fine.
+          AI33_API_KEY: ${{ secrets.AI33_API_KEY }}
         run: python -m worker render --job .render/job.json --id cloud
 
       - name: Summarise

@@ -89,6 +89,7 @@ def create_app(cfg: Optional[Config] = None, *, worker: bool = True) -> FastAPI:
         from .render.style import LABEL_DENSITY_DROP, VECTOR_STYLES
         from .sources import gibs
         from .tts import available_providers, list_voices
+        from .tts.catalog import PAID_PROVIDERS
 
         return {
             "stages": STAGES,
@@ -107,6 +108,7 @@ def create_app(cfg: Optional[Config] = None, *, worker: bool = True) -> FastAPI:
                 for k, v in gibs.LAYERS.items() if v.kind == "weather"],
             "tts_providers": [
                 {"id": name, "available": ok,
+                 "paid": name in PAID_PROVIDERS,
                  "voices": list_voices(name) if ok else []}
                 for name, ok in available_providers().items()],
             "music": list_music(cfg.path("data")),

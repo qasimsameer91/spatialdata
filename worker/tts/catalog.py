@@ -35,10 +35,26 @@ GCLOUD_VOICES = [
     {"id": "en-GB-Chirp3-HD-Leda", "label": "Leda (UK female)"},
 ]
 
+# AI33 / OpenSpeaker. A starting set proven in the mapediting project; the
+# live library is far larger and any voice id from it can be passed through.
+# IDs carry their engine as a prefix: edge_, elevenlabs_, minimax_, ...
+AI33_VOICES = [
+    {"id": "edge_en-US-AriaNeural", "label": "Aria (US female, Edge)"},
+    {"id": "edge_en-US-GuyNeural", "label": "Guy (US male, Edge)"},
+    {"id": "edge_en-GB-SoniaNeural", "label": "Sonia (UK female, Edge)"},
+    {"id": "elevenlabs_nPczCjzI2devNBz1zQrb", "label": "Brian (US male, deep, ElevenLabs)"},
+    {"id": "elevenlabs_pFZP5JQG7iQjIQuC4Bku", "label": "Lily (female, velvety, ElevenLabs)"},
+]
+
 VOICES_BY_PROVIDER = {
     "kokoro": KOKORO_VOICES,
     "gcloud": GCLOUD_VOICES,
+    "ai33": AI33_VOICES,
 }
+
+#: Providers that spend money per use. The UI labels these; nothing selects
+#: one implicitly.
+PAID_PROVIDERS = frozenset({"ai33"})
 
 
 def _installed(module: str) -> bool:
@@ -59,8 +75,16 @@ def gcloud_available() -> bool:
             and bool(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")))
 
 
+def ai33_available() -> bool:
+    # A key is all it needs; the client is the standard library.
+    from ..env import load_env
+    load_env()
+    return bool(os.environ.get("AI33_API_KEY", "").strip())
+
+
 def available_providers() -> dict[str, bool]:
-    return {"kokoro": kokoro_available(), "gcloud": gcloud_available()}
+    return {"kokoro": kokoro_available(), "gcloud": gcloud_available(),
+            "ai33": ai33_available()}
 
 
 def lang_for_voice(voice: str) -> str:

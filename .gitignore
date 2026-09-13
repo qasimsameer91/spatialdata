@@ -20,6 +20,11 @@ data/music/*.m4a
 # Local overrides (may contain a dashboard token).
 config/local.json
 
+# API keys (AI33_API_KEY). The repository is public: never commit these.
+.env
+.env.*
+!.env.example
+
 # Python
 __pycache__/
 *.py[cod]

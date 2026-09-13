@@ -64,6 +64,7 @@ python -m worker serve          # http://127.0.0.1:8000
 | Place search | OSM Nominatim | free | no |
 | Map renderer | MapLibre GL JS | open source | never Mapbox |
 | Voiceover | Kokoro (local) | free, unlimited | no |
+| Voiceover *(optional, **paid**)* | AI33 / OpenSpeaker | credits per narration | `AI33_API_KEY` in `.env` |
 | Word timings | Whisper (local) | free | no |
 | Music | Kevin MacLeod, CC BY | free | no |
 | Encode | `h264_amf` (your GPU) | free | — |
@@ -170,7 +171,7 @@ Set `SPATIALDATA_TOKEN` on both sides to require a shared secret.
 
 | Stage | Module | Notes |
 |---|---|---|
-| Narration | `worker/tts/` | Kokoro (default) or Google Cloud; per-sentence |
+| Narration | `worker/tts/` | Kokoro (default), Google Cloud, or AI33 (paid) |
 | Word timings | `worker/tts/align.py` | Whisper, mapped back onto the script |
 | Camera path | `worker/camera.py` | hold / flyto / orbit / path, great-circle |
 | Timeline | `worker/beats.py` | timestamp → camera → active overlays |
@@ -330,6 +331,33 @@ SPATIALDATA_PROFILE=cloud python -m worker render --job examples/alps.json
 
 ---
 
+## AI33 voices (optional, paid)
+
+The one provider in this project that costs money. Kokoro stays the default;
+AI33 is used only when a job sets `"tts_provider": "ai33"` or you pick it in
+the dashboard.
+
+```bash
+cp .env.example .env        # then paste your key from https://ai33.pro
+python -m worker render --job examples/alps.json --tts ai33        --voice elevenlabs_nPczCjzI2devNBz1zQrb
+```
+
+`.env` is gitignored. This repository is public, so the key must never be
+committed; for cloud renders add it as a repository secret named
+`AI33_API_KEY` instead.
+
+Why it is worth paying for, beyond the voices: **native word timings.**
+Whisper transcribes what it hears and mangles place names, which are exactly
+the words overlay cues hang on. AI33 returns timings from the TTS engine
+itself, mapped onto the script's own spelling. The whole narration goes out as
+one task, so one charge, and the credits spent land in the render's
+`stats.json` under `voice.credits`.
+
+Any voice id from AI33's library works; the dashboard lists a verified
+starting set (Edge Aria/Guy/Sonia, ElevenLabs Brian/Lily).
+
+---
+
 ## Configuration
 
 `config/default.json` → `config/<profile>.json` → `config/local.json` →
@@ -381,7 +409,7 @@ worker/
   cache/     store.py  fetch.py  server.py
   sources/   upstreams.py  gibs.py  borders.py  population.py
   render/    style.py  capture.py  map.html  vendor/
-  tts/       catalog.py  kokoro_tts.py  gcloud_tts.py  align.py
+  tts/       catalog.py  kokoro_tts.py  gcloud_tts.py  ai33_tts.py  align.py
   audio/     mix.py
 dashboard/static/   index.html  style.css  app.js
 data/      download_data.py  natural_earth/  kontur/  music/

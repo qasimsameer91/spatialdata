@@ -473,6 +473,8 @@ class Pipeline:
             "segments": len(voice.segments), "words": len(voice.words),
             "aligned_with": voice.aligned_with,
         }
+        if voice.credits is not None:
+            stats["voice"]["credits"] = voice.credits
         return voice
 
     def _build_timeline(self, spec: JobSpec, voice, frames: int, fps: int,

@@ -192,7 +192,8 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument("--satellite-layer")
     r.add_argument("--weather-layer")
     r.add_argument("--narration", help="script text, or a path to a .txt file")
-    r.add_argument("--tts", choices=["kokoro", "gcloud"])
+    r.add_argument("--tts", choices=["kokoro", "gcloud", "ai33"],
+                   help="voiceover provider; ai33 is paid and needs AI33_API_KEY")
     r.add_argument("--voice")
     r.add_argument("--music", help="file in data/music, or a path")
     r.add_argument("--duration", type=float, help="seconds (narration may extend it)")

@@ -7,6 +7,8 @@ Providers
             account of any kind.
 ``gcloud``  Google Cloud TTS free tier (Chirp3 HD voices). Optional; used only
             when explicitly selected and credentials are already present.
+``ai33``    AI33 / OpenSpeaker. PAID, credit-based, optional. Large voice
+            library and native word timings; needs AI33_API_KEY in .env.
 
 Narration is synthesised **per sentence** and concatenated, which gives exact
 segment boundaries for the beats timeline without having to infer them. Word
@@ -73,10 +75,13 @@ class VoiceResult:
     segments: list[Segment] = field(default_factory=list)
     words: list[Word] = field(default_factory=list)
     aligned_with: str = ""
+    #: Credits spent, for paid providers. None for free ones.
+    credits: Optional[float] = None
 
     def as_dict(self) -> dict:
         return {
             "audio": str(self.audio_path),
+            "credits": self.credits,
             "sample_rate": self.sample_rate,
             "duration_s": round(self.duration_s, 3),
             "provider": self.provider,
@@ -145,9 +150,14 @@ def synthesize(text: str, out_path: Path, *, provider: str = "kokoro",
         from . import gcloud_tts
         result = gcloud_tts.synthesize(sentences, Path(out_path), voice=voice,
                                        cfg=cfg, on_progress=on_progress)
+    elif provider == "ai33":
+        from . import ai33_tts
+        result = ai33_tts.synthesize(sentences, Path(out_path), voice=voice,
+                                     cfg=cfg, on_progress=on_progress)
     else:
         raise ValueError(
-            f"unknown TTS provider {provider!r}; expected 'kokoro' or 'gcloud'")
+            f"unknown TTS provider {provider!r}; "
+            "expected 'kokoro', 'gcloud' or 'ai33'")
 
     # Word timings: use the provider's own when it has them, else force-align.
     if not result.words:

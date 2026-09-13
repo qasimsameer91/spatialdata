@@ -117,6 +117,11 @@ class JobSpec:
                 "cross-fades imagery from date to date_end")
         if self.basemap == "satellite" or "satellite" in self.overlays:
             gibs.get_layer(self.satellite_layer)
+        from .tts.catalog import VOICES_BY_PROVIDER
+        if self.tts_provider not in VOICES_BY_PROVIDER:
+            raise ValueError(
+                f"tts_provider must be one of {sorted(VOICES_BY_PROVIDER)}, "
+                f"got {self.tts_provider!r}")
         if not (1 <= self.fps <= 120):
             raise ValueError(f"fps must be 1..120, got {self.fps}")
         if not (0.5 <= self.duration_s <= 900):

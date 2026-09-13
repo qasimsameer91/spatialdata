@@ -281,8 +281,11 @@
     fillSelect($("#satellite_layer"), META.satellite_layers, "truecolor_viirs");
     fillSelect($("#weather_layer"), META.weather_layers);
 
+    // Paid providers say so in the dropdown itself: picking one spends money,
+    // and that should never be a surprise found later in the stats.
     const providers = (META.tts_providers || []).map((p) => ({
-      id: p.id, label: p.id + (p.available ? "" : " (not configured)")
+      id: p.id,
+      label: p.id + (p.paid ? " (paid)" : "") + (p.available ? "" : " (not configured)")
     }));
     fillSelect($("#tts_provider"), providers, "kokoro");
     fillSelect($("#tts_voice"), providerVoices("kokoro"), "af_heart");

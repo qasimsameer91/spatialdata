@@ -47,6 +47,13 @@ def run_checks(cfg) -> bool:
             print(f"{level}{module} not installed")
             ok = ok and not required
 
+    print("\noptional paid services")
+    from .tts.catalog import ai33_available
+    if ai33_available():
+        print(f"{CHECKS_PASSED}AI33_API_KEY set - 'ai33' voiceover available (paid)")
+    else:
+        print(f"{CHECKS_WARN}AI33_API_KEY not set - 'ai33' voiceover unavailable")
+
     print("\nhardware encoder")
     from .encode import has_encoder
     if has_encoder("h264_amf"):
